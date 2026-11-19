@@ -1,55 +1,64 @@
-import { BebasNeue_400Regular } from "@expo-google-fonts/bebas-neue";
-import {
-  Nunito_400Regular,
-  Nunito_600SemiBold,
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
-  useFonts,
-} from "@expo-google-fonts/nunito";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { AuthProvider } from "../src/AuthContext";
-import { COLORS } from "../src/theme";
+import { Ionicons } from "@expo/vector-icons";
+import { Redirect, Tabs, useRouter } from "expo-router";
+import { Pressable } from "react-native";
+import { ActivityIndicator, View } from "react-native";
+import { useAuth } from "../src/AuthContext";
+import HeaderLogoutButton from "../src/components/HeaderLogoutButton";
+import { COLORS, FONTS } from "../src/theme";
 
-SplashScreen.preventAutoHideAsync().catch(() => {});
+function Voltar() {
+  const router = useRouter();
+  return (
+    <Pressable onPress={() => router.replace("/mais")} hitSlop={12} style={{ paddingLeft: 12 }}>
+      <Ionicons name="chevron-back" size={24} color="#fff" />
+    </Pressable>
+  );
+}
+const comVoltar = (title) => ({ title, href: null, headerLeft: () => <Voltar /> });
 
-export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    BebasNeue_400Regular,
-    Nunito_400Regular,
-    Nunito_600SemiBold,
-    Nunito_700Bold,
-    Nunito_800ExtraBold,
-  });
+const icon = (name) => ({ color, size }) => <Ionicons name={name} size={size} color={color} />;
 
-  useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+export default function TabsLayout() {
+  const { usuario, checking } = useAuth();
 
-  if (!fontsLoaded) return null;
+  if (checking) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator color={COLORS.navy} />
+      </View>
+    );
+  }
+  if (!usuario) return <Redirect href="/login" />;
+
+  const isEducador = usuario.tipo === "educador";
 
   return (
-    <AuthProvider>
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: COLORS.navy },
-          headerTintColor: COLORS.white,
-          headerTitleStyle: { fontFamily: "Nunito_700Bold", fontSize: 16 },
-          headerShadowVisible: false,
-          contentStyle: { backgroundColor: COLORS.background },
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ title: "Entrar" }} />
-        <Stack.Screen name="cadastro" options={{ title: "Criar conta" }} />
-        <Stack.Screen name="contato" options={{ title: "Fale conosco" }} />
-        <Stack.Screen name="aluno" options={{ title: "Área do Aluno", headerBackVisible: false }} />
-        <Stack.Screen
-          name="educador"
-          options={{ title: "Área do Educador", headerBackVisible: false }}
-        />
-      </Stack>
-    </AuthProvider>
+    <Tabs
+      screenOptions={{
+        headerStyle: { backgroundColor: COLORS.navy },
+        headerTintColor: COLORS.white,
+        headerTitleStyle: { fontFamily: FONTS.bodyBold, fontSize: 16 },
+        headerShadowVisible: false,
+        headerRight: () => <HeaderLogoutButton />,
+        headerRightContainerStyle: { paddingRight: 12 },
+        tabBarActiveTintColor: COLORS.orange,
+        tabBarInactiveTintColor: "#8a94a6",
+        tabBarLabelStyle: { fontFamily: FONTS.bodyBold, fontSize: 11 },
+        tabBarStyle: { backgroundColor: COLORS.white, borderTopColor: COLORS.border },
+        sceneStyle: { backgroundColor: COLORS.background },
+      }}
+    >
+      <Tabs.Screen name="aluno" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: isEducador ? null : undefined }} />
+      <Tabs.Screen name="educador" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: isEducador ? undefined : null }} />
+      <Tabs.Screen name="turmas" options={{ title: "Turmas", tabBarIcon: icon("people-outline") }} />
+      <Tabs.Screen name="atividades" options={{ title: "Atividades", tabBarIcon: icon("document-text-outline") }} />
+      <Tabs.Screen name="chat" options={{ title: "Bate-papo", tabBarIcon: icon("chatbubbles-outline") }} />
+      <Tabs.Screen name="mais" options={{ title: "Mais", tabBarIcon: icon("menu-outline") }} />
+      <Tabs.Screen name="boletim" options={comVoltar("Boletim")} />
+      <Tabs.Screen name="horario" options={comVoltar("Horário das aulas")} />
+      <Tabs.Screen name="salas" options={comVoltar("Salas de vídeo")} />
+      <Tabs.Screen name="agenda" options={comVoltar("Agenda")} />
+      <Tabs.Screen name="perfil" options={comVoltar("Meu perfil")} />
+    </Tabs>
   );
 }

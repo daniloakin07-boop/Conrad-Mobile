@@ -1,83 +1,85 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useAuth } from "../src/AuthContext";
-import DashboardCard from "../src/components/DashboardCard";
-import HeaderLogoutButton from "../src/components/HeaderLogoutButton";
-import { COLORS, FONTS } from "../src/theme";
+import { useRouter } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { api } from "../../src/api";
+import { useAuth } from "../../src/AuthContext";
+import { COLORS, FONTS } from "../../src/theme";
+import Page, { Card, Empty, Title } from "../../src/ui/Page";
+import { useApi } from "../../src/ui/useApi";
 
-export default function Educador() {
-  const { usuario, checking } = useAuth();
+export default function PainelEducador() {
+  const { usuario } = useAuth();
   const router = useRouter();
+  const turmas = useApi(() => api.turmas(), []);
+  const ativ = useApi(() => api.atividadesEducador(), []);
 
-  useEffect(() => {
-    if (checking) return;
-    if (!usuario) {
-      router.replace("/login");
-    } else if (usuario.tipo !== "educador") {
-      router.replace("/aluno");
-    }
-  }, [checking, usuario]);
+  const listaTurmas = turmas.data?.turmas || [];
+  const listaAtiv = Array.isArray(ativ.data) ? ativ.data : [];
+  const totalAlunos = listaTurmas.reduce((s, t) => s + Number(t.quantidade_alunos || 0), 0);
+  const aCorrigir = listaAtiv.reduce((s, a) => s + (Number(a.total_entregas) - Number(a.corrigidas)), 0);
 
-  if (checking || !usuario || usuario.tipo !== "educador") {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color={COLORS.navy} />
-      </View>
-    );
-  }
+  const reload = async () => { await Promise.all([turmas.reload(), ativ.reload()]); };
 
   return (
-    <>
-      <Stack.Screen options={{ headerRight: () => <HeaderLogoutButton /> }} />
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-        <Text style={styles.greeting}>Olá, {usuario.nome.split(" ")[0]} 👋</Text>
-        <Text style={styles.subtitle}>Bem-vindo(a) de volta à sua área do educador.</Text>
+    <Page onRefresh={reload}>
+      <Title sub="Visão geral das suas turmas">Olá, {usuario.nome.split(" ")[0]}</Title>
 
-        <DashboardCard
-          icon={<Ionicons name="people-outline" size={20} color={COLORS.navy} />}
-          title="Minhas turmas"
-          emptyText="Você ainda não criou nenhuma turma."
-        />
-        <DashboardCard
-          icon={<Ionicons name="document-text-outline" size={20} color={COLORS.navy} />}
-          title="Atividades publicadas"
-          emptyText="Nenhuma atividade publicada ainda."
-        />
-        <DashboardCard
-          icon={<Ionicons name="mail-outline" size={20} color={COLORS.navy} />}
-          title="Mensagens de contato"
-          emptyText="As mensagens enviadas pelo formulário de Fale Conosco ficam salvas no banco (tb_contatos), mas o servidor ainda não expõe uma rota GET para listá-las aqui."
-        />
+      <View style={styles.stats}>
+        <Stat n={turmas.loading ? "–" : listaTurmas.length} label="Turmas" />
+        <Stat n={turmas.loading ? "–" : totalAlunos} label="Alunos" />
+        <Stat n={ativ.loading ? "–" : aCorrigir} label="A corrigir" />
+      </View>
 
-        <Text style={styles.note}>
-          Versão mínima da área do educador — o back-end (server.js) ainda não tem rotas para
-          turmas/atividades, só auth e contato. Assim que existirem esses endpoints, dá pra
-          plugar aqui direto.
-        </Text>
-      </ScrollView>
-    </>
+      <Card>
+        <Text style={styles.cardTitle}>Minhas turmas</Text>
+        {listaTurmas.length === 0 ? (
+          <Empty text="Você ainda não criou nenhuma turma." />
+        ) : (
+          listaTurmas.slice(0, 5).map((t) => (
+            <Pressable key={t.id} style={styles.row} onPress={() => router.push(`/turma/${t.id}`)}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nome}>{t.nome}</Text>
+                <Text style={styles.meta}>{t.disciplina} · {t.quantidade_alunos} aluno(s)</Text>
+              </View>
+            </Pressable>
+          ))
+        )}
+      </Card>
+
+      <Card>
+        <Text style={styles.cardTitle}>Atividades recentes</Text>
+        {listaAtiv.length === 0 ? (
+          <Empty text="Nenhuma atividade publicada ainda." />
+        ) : (
+          listaAtiv.slice(0, 5).map((a) => (
+            <View key={a.id} style={styles.row}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nome}>{a.titulo}</Text>
+                <Text style={styles.meta}>{a.turma} · {a.corrigidas}/{a.total_entregas} corrigidas</Text>
+              </View>
+            </View>
+          ))
+        )}
+      </Card>
+    </Page>
+  );
+}
+
+function Stat({ n, label }) {
+  return (
+    <View style={styles.stat}>
+      <Text style={styles.statN}>{n}</Text>
+      <Text style={styles.statL}>{label}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.background },
-  content: { padding: 20 },
-  loading: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.background,
-  },
-  greeting: { fontFamily: FONTS.display, fontSize: 26, color: COLORS.navy },
-  subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted, marginBottom: 20 },
-  note: {
-    fontFamily: FONTS.body,
-    fontSize: 12,
-    color: COLORS.textMuted2,
-    lineHeight: 18,
-    marginTop: 4,
-    fontStyle: "italic",
-  },
+  stats: { flexDirection: "row", gap: 10, marginBottom: 12 },
+  stat: { flex: 1, backgroundColor: COLORS.navy, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
+  statN: { fontFamily: FONTS.bodyExtraBold, fontSize: 26, color: COLORS.white },
+  statL: { fontFamily: FONTS.bodyBold, fontSize: 11, color: "#dfe7f6", marginTop: 2 },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 8 },
+  row: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopWidth: 1, borderTopColor: "#eef1f4" },
+  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
 });

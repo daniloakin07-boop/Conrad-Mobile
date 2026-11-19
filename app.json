@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A1F44"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.conradvirtualschool.app"
@@ -27,6 +29,20 @@
     "web": {
       "favicon": "./assets/icon.png"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permite escolher fotos para o perfil e para o bate-papo."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Permite gravar mensagens de voz no bate-papo."
+        }
+      ]
+    ]
   }
 }

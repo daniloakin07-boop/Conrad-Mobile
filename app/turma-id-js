@@ -1,0 +1,49 @@
+import { Stack, useLocalSearchParams } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
+import { api } from "../../src/api";
+import { COLORS, FONTS } from "../../src/theme";
+import Page, { Badge, Card, Title } from "../../src/ui/Page";
+import { useApi } from "../../src/ui/useApi";
+
+export default function TurmaDetalhe() {
+  const { id } = useLocalSearchParams();
+  const { data, loading, error, reload } = useApi(() => api.turma(id), [id]);
+  const turma = data?.turma;
+
+  return (
+    <>
+      <Stack.Screen options={{ title: turma?.nome || "Turma" }} />
+      <Page loading={loading} error={error} onRefresh={reload}>
+        {turma && (
+          <>
+            <Title sub={`${turma.disciplina} · Prof. ${turma.professor}`}>{turma.nome}</Title>
+            {turma.descricao ? (
+              <Card><Text style={styles.desc}>{turma.descricao}</Text></Card>
+            ) : null}
+            {turma.codigo ? (
+              <Card><Text style={styles.meta}>Código de entrada</Text><Text style={styles.codigo}>{turma.codigo}</Text></Card>
+            ) : null}
+            <Card>
+              <Text style={styles.cardTitle}>Pessoas ({data.pessoas.length})</Text>
+              {data.pessoas.map((p) => (
+                <View key={`${p.papel}-${p.id}`} style={styles.row}>
+                  <Text style={styles.nome}>{p.nome}</Text>
+                  <Badge label={p.papel} bg={p.papel === "Professor" ? "#fde8d3" : "#e6ecf5"} />
+                </View>
+              ))}
+            </Card>
+          </>
+        )}
+      </Page>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  desc: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, lineHeight: 20 },
+  meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted },
+  codigo: { fontFamily: FONTS.display, fontSize: 30, color: COLORS.orange, letterSpacing: 2 },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 6 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 9, borderTopWidth: 1, borderTopColor: "#eef1f4" },
+  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+});

@@ -1,83 +1,99 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import { useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useAuth } from "../src/AuthContext";
-import DashboardCard from "../src/components/DashboardCard";
-import HeaderLogoutButton from "../src/components/HeaderLogoutButton";
-import { COLORS, FONTS } from "../src/theme";
+import { useRouter } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import horarios from "../../src/data/horarios.json";
+import { api } from "../../src/api";
+import { useAuth } from "../../src/AuthContext";
+import { COLORS, FONTS } from "../../src/theme";
+import Page, { Badge, Card, Empty, Title } from "../../src/ui/Page";
+import { useApi } from "../../src/ui/useApi";
 
-export default function Aluno() {
-  const { usuario, checking } = useAuth();
+const DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
+
+export default function PainelAluno() {
+  const { usuario } = useAuth();
   const router = useRouter();
+  const ativ = useApi(() => api.atividadesAluno(), []);
 
-  useEffect(() => {
-    if (checking) return;
-    if (!usuario) {
-      router.replace("/login");
-    } else if (usuario.tipo !== "aluno") {
-      router.replace("/educador");
-    }
-  }, [checking, usuario]);
+  const lista = ativ.data?.atividades || [];
+  const pendentes = lista.filter((a) => !a.enviada_em);
+  const enviadas = lista.filter((a) => a.enviada_em && !a.corrigida_em);
+  const corrigidas = lista.filter((a) => a.corrigida_em);
 
-  if (checking || !usuario || usuario.tipo !== "aluno") {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color={COLORS.navy} />
-      </View>
-    );
-  }
+  const hoje = horarios[DIAS[new Date().getDay()]] || [];
 
   return (
-    <>
-      <Stack.Screen options={{ headerRight: () => <HeaderLogoutButton /> }} />
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-        <Text style={styles.greeting}>Olá, {usuario.nome.split(" ")[0]} 👋</Text>
-        <Text style={styles.subtitle}>Bem-vindo(a) de volta à sua área do aluno.</Text>
+    <Page onRefresh={ativ.reload}>
+      <Title sub="Resumo do seu dia">Olá, {usuario.nome.split(" ")[0]}</Title>
 
-        <DashboardCard
-          icon={<Ionicons name="book-outline" size={20} color={COLORS.navy} />}
-          title="Minhas atividades"
-          emptyText="Nenhuma atividade publicada ainda. Quando um educador postar uma, ela aparece aqui."
-        />
-        <DashboardCard
-          icon={<Ionicons name="people-outline" size={20} color={COLORS.navy} />}
-          title="Minhas turmas"
-          emptyText="Você ainda não está em nenhuma turma."
-        />
-        <DashboardCard
-          icon={<Ionicons name="trending-up-outline" size={20} color={COLORS.navy} />}
-          title="Progresso"
-          emptyText="Seu progresso aparece aqui assim que houver atividades avaliadas."
-        />
+      <View style={styles.stats}>
+        <Stat n={ativ.loading ? "–" : pendentes.length} label="Pendentes" />
+        <Stat n={ativ.loading ? "–" : enviadas.length} label="Enviadas" />
+        <Stat n={ativ.loading ? "–" : corrigidas.length} label="Corrigidas" />
+      </View>
 
-        <Text style={styles.note}>
-          Versão mínima da área do aluno — o back-end (server.js) ainda não tem rotas para
-          turmas/atividades, só auth e contato. Assim que existirem esses endpoints, dá pra
-          plugar aqui direto.
-        </Text>
-      </ScrollView>
-    </>
+      <Card>
+        <View style={styles.rowHead}>
+          <Text style={styles.cardTitle}>Aulas de hoje</Text>
+          <Pressable onPress={() => router.push("/horario")}>
+            <Text style={styles.link}>Ver semana</Text>
+          </Pressable>
+        </View>
+        {hoje.length === 0 ? (
+          <Empty text="Sem aulas hoje." />
+        ) : (
+          hoje.map((a, i) => (
+            <View key={i} style={styles.aula}>
+              <Text style={styles.hora}>{a.hora}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.materia, !a.sala && { color: COLORS.textMuted }]}>{a.materia}</Text>
+                {a.sala ? <Text style={styles.sala}>{a.sala} · {a.professor}</Text> : null}
+              </View>
+            </View>
+          ))
+        )}
+      </Card>
+
+      <Card>
+        <Text style={styles.cardTitle}>Tarefas pendentes</Text>
+        {ativ.error ? <Empty text={ativ.error} /> : pendentes.length === 0 ? (
+          <Empty text="Nenhuma tarefa pendente. 🎉" />
+        ) : (
+          pendentes.slice(0, 4).map((a) => (
+            <View key={a.id} style={styles.aula}>
+              <Ionicons name="ellipse-outline" size={18} color={COLORS.navy} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.materia}>{a.titulo}</Text>
+                <Text style={styles.sala}>{a.disciplina}{a.data_aplicacao ? ` · ${a.data_aplicacao}` : ""}</Text>
+              </View>
+              <Badge label={a.tipo === "avaliacao" ? "Prova" : "Atividade"} />
+            </View>
+          ))
+        )}
+      </Card>
+    </Page>
+  );
+}
+
+function Stat({ n, label }) {
+  return (
+    <View style={styles.stat}>
+      <Text style={styles.statN}>{n}</Text>
+      <Text style={styles.statL}>{label}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: COLORS.background },
-  content: { padding: 20 },
-  loading: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.background,
-  },
-  greeting: { fontFamily: FONTS.display, fontSize: 26, color: COLORS.navy },
-  subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted, marginBottom: 20 },
-  note: {
-    fontFamily: FONTS.body,
-    fontSize: 12,
-    color: COLORS.textMuted2,
-    lineHeight: 18,
-    marginTop: 4,
-    fontStyle: "italic",
-  },
+  stats: { flexDirection: "row", gap: 10, marginBottom: 12 },
+  stat: { flex: 1, backgroundColor: COLORS.navy, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
+  statN: { fontFamily: FONTS.bodyExtraBold, fontSize: 26, color: COLORS.white },
+  statL: { fontFamily: FONTS.bodyBold, fontSize: 11, color: "#dfe7f6", marginTop: 2 },
+  rowHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 8 },
+  link: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.orange },
+  aula: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#eef1f4" },
+  hora: { width: 46, fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.navy },
+  materia: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  sala: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
 });
