@@ -1,11 +1,11 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { api } from "../../src/api";
-import Button from "../../src/components/Button";
-import Message from "../../src/components/Message";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Badge, Card, Title } from "../../src/ui/Page";
+import { api } from "../src/api";
+import Button from "../src/components/Button";
+import Message from "../src/components/Message";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Badge, Card, Title } from "../src/ui/page";
 
 const LETRAS = "ABCDEF";
 const pts = (n) => String(Math.round(Number(n) * 100) / 100).replace(".", ",");

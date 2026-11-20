@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs, useRouter } from "expo-router";
+import { Redirect, Slot, Tabs, useRouter, useSegments } from "expo-router";
 import { Pressable } from "react-native";
 import { ActivityIndicator, View } from "react-native";
-import { useAuth } from "../src/AuthContext";
+import { AuthProvider, useAuth } from "../src/AuthContext";
 import HeaderLogoutButton from "../src/components/HeaderLogoutButton";
 import { COLORS, FONTS } from "../src/theme";
+
+const PUBLIC_ROUTES = new Set(["index", "login", "cadastro", "contato", "sobre"]);
 
 function Voltar() {
   const router = useRouter();
@@ -18,8 +20,21 @@ const comVoltar = (title) => ({ title, href: null, headerLeft: () => <Voltar /> 
 
 const icon = (name) => ({ color, size }) => <Ionicons name={name} size={size} color={color} />;
 
-export default function TabsLayout() {
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <TabsLayout />
+    </AuthProvider>
+  );
+}
+
+function TabsLayout() {
   const { usuario, checking } = useAuth();
+  const segments = useSegments();
+
+  if (segments.length === 0 || PUBLIC_ROUTES.has(segments[0])) {
+    return <Slot />;
+  }
 
   if (checking) {
     return (

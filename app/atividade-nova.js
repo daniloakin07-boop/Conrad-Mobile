@@ -1,13 +1,13 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import { api } from "../../src/api";
-import Button from "../../src/components/Button";
-import Message from "../../src/components/Message";
-import TextField from "../../src/components/TextField";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Title } from "../../src/ui/Page";
-import { useApi } from "../../src/ui/useApi";
+import { api } from "../src/api";
+import Button from "../src/components/Button";
+import Message from "../src/components/Message";
+import TextField from "../src/components/TextField";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Title } from "../src/ui/page";
+import { useApi } from "../src/api";
 
 const LETRAS = "ABCDEF";
 const novaQuestao = (tipo) => ({

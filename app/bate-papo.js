@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { api } from "../../src/api";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Empty, Title } from "../../src/ui/Page";
-import { useApi } from "../../src/ui/useApi";
+import { api } from "../src/api";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Empty, Title } from "../src/ui/page";
+import { useApi } from "../src/api";
 
 export default function ChatLista() {
   const router = useRouter();

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import horarios from "../../src/data/horarios.json";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Title } from "../../src/ui/Page";
+import horarios from "../src/data/data-horarios";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Title } from "../src/ui/page";
 
 const DIAS = [["seg", "Seg"], ["ter", "Ter"], ["qua", "Qua"], ["qui", "Qui"], ["sex", "Sex"]];
 

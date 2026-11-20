@@ -1,14 +1,14 @@
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { api } from "../../src/api";
-import { useAuth } from "../../src/AuthContext";
-import Button from "../../src/components/Button";
-import Message from "../../src/components/Message";
-import TextField from "../../src/components/TextField";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Title } from "../../src/ui/Page";
-import { useApi } from "../../src/ui/useApi";
+import { api } from "../src/api";
+import { useAuth } from "../src/AuthContext";
+import Button from "../src/components/Button";
+import Message from "../src/components/Message";
+import TextField from "../src/components/TextField";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Title } from "../src/ui/page";
+import { useApi } from "../src/api";
 
 export default function Perfil() {
   const { usuario, setUsuario } = useAuth();

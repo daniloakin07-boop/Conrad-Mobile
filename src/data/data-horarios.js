@@ -1,4 +1,4 @@
-{
+export default {
   "seg": [
     { "hora": "07:15", "materia": "Português", "sala": "Sala 3", "professor": "Prof. Eloane" },
     { "hora": "08:00", "materia": "Filosofia", "sala": "Sala 12", "professor": "Prof. Carlos" },

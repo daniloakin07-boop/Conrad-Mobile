@@ -1,12 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import horarios from "../../src/data/horarios.json";
-import { api } from "../../src/api";
-import { useAuth } from "../../src/AuthContext";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Badge, Card, Empty, Title } from "../../src/ui/Page";
-import { useApi } from "../../src/ui/useApi";
+import horarios from "../src/data/data-horarios";
+import { api } from "../src/api";
+import { useAuth } from "../src/AuthContext";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Badge, Card, Empty, Title } from "../src/ui/page";
+import { useApi } from "../src/api";
 
 const DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
 

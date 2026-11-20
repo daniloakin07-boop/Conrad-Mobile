@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useAuth } from "../../src/AuthContext";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Title } from "../../src/ui/Page";
+import { useAuth } from "../src/AuthContext";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Title } from "../src/ui/page";
 
 export default function Mais() {
   const { usuario, logout } = useAuth();

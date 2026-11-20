@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Button from "../../src/components/Button";
-import TextField from "../../src/components/TextField";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Title } from "../../src/ui/Page";
+import Button from "../src/components/Button";
+import TextField from "../src/components/TextField";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Title } from "../src/ui/page";
 
 const DIAS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 const PADRAO = [

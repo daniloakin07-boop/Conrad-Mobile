@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import { api } from "../../src/api";
-import { COLORS, FONTS } from "../../src/theme";
-import Page, { Card, Empty, Title } from "../../src/ui/Page";
-import { useApi } from "../../src/ui/useApi";
+import { api } from "../src/api";
+import { COLORS, FONTS } from "../src/theme";
+import Page, { Card, Empty, Title } from "../src/ui/page";
+import { useApi } from "../src/api";
 
 export default function Boletim() {
   const { data, loading, error, reload } = useApi(() => api.boletim(), []);
