@@ -1,36 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Slot, Tabs, useRouter, useSegments } from "expo-router";
-import { Pressable } from "react-native";
+import { Redirect, Slot, Tabs, useSegments } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../src/AuthContext";
 import HeaderLogoutButton from "../src/components/HeaderLogoutButton";
+import { ehEducador } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 
 const PUBLIC_ROUTES = new Set(["index", "login", "cadastro", "contato", "sobre"]);
-
-function Voltar() {
-  const router = useRouter();
-  return (
-    <Pressable onPress={() => router.replace("/mais")} hitSlop={12} style={{ paddingLeft: 12 }}>
-      <Ionicons name="chevron-back" size={24} color="#fff" />
-    </Pressable>
-  );
-}
-const comVoltar = (title) => ({ title, href: null, headerLeft: () => <Voltar /> });
-
 const icon = (name) => ({ color, size }) => <Ionicons name={name} size={size} color={color} />;
 
-export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <TabsLayout />
-    </AuthProvider>
-  );
-}
-
-function TabsLayout() {
+// Navegação inferior (padrão mobile no lugar do menu lateral do Web).
+// Painel do aluno e do educador são telas diferentes: só uma aparece.
+function TabsNavigator() {
   const { usuario, checking } = useAuth();
   const segments = useSegments();
+  const educador = ehEducador(usuario);
 
   if (segments.length === 0 || PUBLIC_ROUTES.has(segments[0])) {
     return <Slot />;
@@ -43,9 +27,10 @@ function TabsLayout() {
       </View>
     );
   }
-  if (!usuario) return <Redirect href="/login" />;
 
-  const isEducador = usuario.tipo === "educador";
+  if (!usuario) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Tabs
@@ -63,17 +48,20 @@ function TabsLayout() {
         sceneStyle: { backgroundColor: COLORS.background },
       }}
     >
-      <Tabs.Screen name="aluno" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: isEducador ? null : undefined }} />
-      <Tabs.Screen name="educador" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: isEducador ? undefined : null }} />
+      <Tabs.Screen name="aluno" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: educador ? null : undefined }} />
+      <Tabs.Screen name="educador" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: educador ? undefined : null }} />
       <Tabs.Screen name="turmas" options={{ title: "Turmas", tabBarIcon: icon("people-outline") }} />
       <Tabs.Screen name="atividades" options={{ title: "Atividades", tabBarIcon: icon("document-text-outline") }} />
       <Tabs.Screen name="chat" options={{ title: "Bate-papo", tabBarIcon: icon("chatbubbles-outline") }} />
       <Tabs.Screen name="mais" options={{ title: "Mais", tabBarIcon: icon("menu-outline") }} />
-      <Tabs.Screen name="boletim" options={comVoltar("Boletim")} />
-      <Tabs.Screen name="horario" options={comVoltar("Horário das aulas")} />
-      <Tabs.Screen name="salas" options={comVoltar("Salas de vídeo")} />
-      <Tabs.Screen name="agenda" options={comVoltar("Agenda")} />
-      <Tabs.Screen name="perfil" options={comVoltar("Meu perfil")} />
     </Tabs>
+  );
+}
+
+export default function TabsLayout() {
+  return (
+    <AuthProvider>
+      <TabsNavigator />
+    </AuthProvider>
   );
 }

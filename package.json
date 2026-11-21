@@ -7,12 +7,14 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "check": "node scripts/check.js"
   },
   "dependencies": {
     "@expo-google-fonts/bebas-neue": "^0.2.3",
     "@expo-google-fonts/nunito": "^0.2.3",
     "@expo/metro-runtime": "~4.0.1",
+    "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "1.23.1",
     "expo": "~52.0.0",
     "expo-asset": "~11.0.5",

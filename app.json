@@ -43,6 +43,9 @@
           "microphonePermission": "Permite gravar mensagens de voz no bate-papo."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "apiUrl": ""
+    }
   }
 }

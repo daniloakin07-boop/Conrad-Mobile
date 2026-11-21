@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import horarios from "../src/data/data-horarios";
 import { api } from "../src/api";
 import { useAuth } from "../src/AuthContext";
+import { dataBR } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Empty, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
@@ -15,8 +17,15 @@ export default function PainelAluno() {
   const router = useRouter();
   const ativ = useApi(() => api.atividadesAluno(), []);
 
+  useFocusEffect(
+    useCallback(() => {
+      ativ.reload();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
+
   const lista = ativ.data?.atividades || [];
-  const pendentes = lista.filter((a) => !a.enviada_em);
+  const pendentes = lista.filter((a) => !a.enviada_em && !a.tempo_esgotado);
   const enviadas = lista.filter((a) => a.enviada_em && !a.corrigida_em);
   const corrigidas = lista.filter((a) => a.corrigida_em);
 
@@ -55,19 +64,24 @@ export default function PainelAluno() {
       </Card>
 
       <Card>
-        <Text style={styles.cardTitle}>Tarefas pendentes</Text>
+        <View style={styles.rowHead}>
+          <Text style={styles.cardTitle}>Tarefas pendentes</Text>
+          <Pressable onPress={() => router.push("/atividades")}>
+            <Text style={styles.link}>Ver todas</Text>
+          </Pressable>
+        </View>
         {ativ.error ? <Empty text={ativ.error} /> : pendentes.length === 0 ? (
           <Empty text="Nenhuma tarefa pendente. 🎉" />
         ) : (
           pendentes.slice(0, 4).map((a) => (
-            <View key={a.id} style={styles.aula}>
+            <Pressable key={a.id} style={styles.aula} onPress={() => router.push(`/atividade/${a.id}`)}>
               <Ionicons name="ellipse-outline" size={18} color={COLORS.navy} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.materia}>{a.titulo}</Text>
-                <Text style={styles.sala}>{a.disciplina}{a.data_aplicacao ? ` · ${a.data_aplicacao}` : ""}</Text>
+                <Text style={styles.sala}>{a.disciplina}{a.data_aplicacao ? ` · ${dataBR(a.data_aplicacao)}` : ""}</Text>
               </View>
               <Badge label={a.tipo === "avaliacao" ? "Prova" : "Atividade"} />
-            </View>
+            </Pressable>
           ))
         )}
       </Card>

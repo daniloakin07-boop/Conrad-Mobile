@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BASE_URL } from "../src/api";
 import { useAuth } from "../src/AuthContext";
 import { conectarChat } from "../src/components/socket";
@@ -21,6 +22,7 @@ export default function Conversa() {
   const [gravando, setGravando] = useState(null);
   const socketRef = useRef(null);
   const listRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const socket = conectarChat();
@@ -99,7 +101,7 @@ export default function Conversa() {
         ListEmptyComponent={!status ? <Text style={s.vazio}>Nenhuma mensagem ainda. Diga olá!</Text> : null}
       />
       {status ? <Text style={s.status}>{status}</Text> : null}
-      <View style={s.barra}>
+      <View style={[s.barra, { paddingBottom: 10 + insets.bottom }]}>
         <Pressable onPress={enviarImagem} hitSlop={8}><Ionicons name="image-outline" size={24} color={COLORS.navy} /></Pressable>
         <TextInput
           style={s.input}
@@ -127,9 +129,24 @@ function Bolha({ m, minha }) {
   const [som, setSom] = useState(null);
   useEffect(() => () => { som?.unloadAsync(); }, [som]);
 
+  // O anexo exige sessão. O player nativo pode não enviar o cookie, então o áudio
+  // é baixado com fetch (que envia) para o cache e tocado a partir do arquivo local.
   async function tocar() {
     try {
-      const { sound } = await Audio.Sound.createAsync({ uri: `${BASE_URL}${m.anexoUrl}` }, { shouldPlay: true });
+      if (som) { await som.replayAsync(); return; }
+      const resp = await fetch(`${BASE_URL}${m.anexoUrl}`, { credentials: "include" });
+      if (!resp.ok) throw new Error("anexo");
+      const blob = await resp.blob();
+      const b64 = await new Promise((ok, falha) => {
+        const r = new FileReader();
+        r.onloadend = () => ok(String(r.result).split(",")[1]);
+        r.onerror = falha;
+        r.readAsDataURL(blob);
+      });
+      const arquivo = `${FileSystem.cacheDirectory}chat-${m.id}.m4a`;
+      await FileSystem.writeAsStringAsync(arquivo, b64, { encoding: FileSystem.EncodingType.Base64 });
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: false, playsInSilentModeIOS: true });
+      const { sound } = await Audio.Sound.createAsync({ uri: arquivo }, { shouldPlay: true });
       setSom(sound);
     } catch {}
   }

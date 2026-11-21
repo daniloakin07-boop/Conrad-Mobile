@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { api } from "./api";
+import { api, setUnauthorizedHandler } from "./api";
 
 const AuthContext = createContext(null);
 
@@ -24,6 +24,12 @@ export function AuthProvider({ children }) {
     const data = await api.cadastro(payload);
     setUsuario(data.usuario);
     return data.usuario;
+  }, []);
+
+  // Sessão expirada no servidor (cookie de 1 h): volta para o login.
+  useEffect(() => {
+    setUnauthorizedHandler(() => setUsuario(null));
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   const logout = useCallback(async () => {

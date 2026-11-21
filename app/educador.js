@@ -1,10 +1,12 @@
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { api } from "../src/api";
+import { api, useApi } from "../src/api";
 import { useAuth } from "../src/AuthContext";
+import Button from "../src/components/Button";
+import { pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
-import Page, { Card, Empty, Title } from "../src/ui/page";
-import { useApi } from "../src/api";
+import Page, { Badge, Card, Empty, Title } from "../src/ui/page";
 
 export default function PainelEducador() {
   const { usuario } = useAuth();
@@ -15,9 +17,18 @@ export default function PainelEducador() {
   const listaTurmas = turmas.data?.turmas || [];
   const listaAtiv = Array.isArray(ativ.data) ? ativ.data : [];
   const totalAlunos = listaTurmas.reduce((s, t) => s + Number(t.quantidade_alunos || 0), 0);
-  const aCorrigir = listaAtiv.reduce((s, a) => s + (Number(a.total_entregas) - Number(a.corrigidas)), 0);
+  const pendentes = listaAtiv.filter((a) => Number(a.total_entregas) > Number(a.corrigidas));
+  const aCorrigir = pendentes.reduce((s, a) => s + (Number(a.total_entregas) - Number(a.corrigidas)), 0);
 
   const reload = async () => { await Promise.all([turmas.reload(), ativ.reload()]); };
+
+  // Entregas novas chegam o tempo todo: atualiza ao voltar para o painel.
+  useFocusEffect(
+    useCallback(() => {
+      reload();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+  );
 
   return (
     <Page onRefresh={reload}>
@@ -29,9 +40,31 @@ export default function PainelEducador() {
         <Stat n={ativ.loading ? "–" : aCorrigir} label="A corrigir" />
       </View>
 
+      <View style={styles.acoes}>
+        <Button label="+ Atividade" variant="cta" onPress={() => router.push({ pathname: "/atividade/nova", params: { tipo: "atividade" } })} style={{ flex: 1 }} />
+        <Button label="+ Avaliação" variant="cta" onPress={() => router.push({ pathname: "/atividade/nova", params: { tipo: "avaliacao" } })} style={{ flex: 1 }} />
+      </View>
+
+      <Card>
+        <Text style={styles.cardTitle}>Para corrigir</Text>
+        {ativ.error ? <Empty text={ativ.error} /> : pendentes.length === 0 ? (
+          <Empty text="Nenhuma correção pendente." />
+        ) : (
+          pendentes.slice(0, 5).map((a) => (
+            <Pressable key={a.id} style={styles.row} onPress={() => router.push(`/atividade/${a.id}/entregas`)}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.nome}>{a.titulo}</Text>
+                <Text style={styles.meta}>{a.turma} · {pts(a.valor_maximo)} pts</Text>
+              </View>
+              <Badge label={`${Number(a.total_entregas) - Number(a.corrigidas)} pendente(s)`} color={COLORS.warnText} bg={COLORS.warnBg} />
+            </Pressable>
+          ))
+        )}
+      </Card>
+
       <Card>
         <Text style={styles.cardTitle}>Minhas turmas</Text>
-        {listaTurmas.length === 0 ? (
+        {turmas.error ? <Empty text={turmas.error} /> : listaTurmas.length === 0 ? (
           <Empty text="Você ainda não criou nenhuma turma." />
         ) : (
           listaTurmas.slice(0, 5).map((t) => (
@@ -51,12 +84,12 @@ export default function PainelEducador() {
           <Empty text="Nenhuma atividade publicada ainda." />
         ) : (
           listaAtiv.slice(0, 5).map((a) => (
-            <View key={a.id} style={styles.row}>
+            <Pressable key={a.id} style={styles.row} onPress={() => router.push(`/atividade/${a.id}/entregas`)}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.nome}>{a.titulo}</Text>
                 <Text style={styles.meta}>{a.turma} · {a.corrigidas}/{a.total_entregas} corrigidas</Text>
               </View>
-            </View>
+            </Pressable>
           ))
         )}
       </Card>
@@ -78,8 +111,9 @@ const styles = StyleSheet.create({
   stat: { flex: 1, backgroundColor: COLORS.navy, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
   statN: { fontFamily: FONTS.bodyExtraBold, fontSize: 26, color: COLORS.white },
   statL: { fontFamily: FONTS.bodyBold, fontSize: 11, color: "#dfe7f6", marginTop: 2 },
+  acoes: { flexDirection: "row", gap: 10, marginBottom: 12 },
   cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 8 },
-  row: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopWidth: 1, borderTopColor: "#eef1f4" },
+  row: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 10, minHeight: 48, borderTopWidth: 1, borderTopColor: COLORS.hairline },
   nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
 });
