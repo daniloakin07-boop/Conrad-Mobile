@@ -9,8 +9,10 @@ import TextField from "../src/components/TextField";
 import { ehEducador } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Empty, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function Turmas() {
+  const styles = useStyles();
   const { usuario } = useAuth();
   const router = useRouter();
   const educador = ehEducador(usuario);
@@ -112,9 +114,9 @@ export default function Turmas() {
   );
 }
 
-const styles = StyleSheet.create({
-  nome: { fontFamily: FONTS.bodyExtraBold, fontSize: 17, color: COLORS.navy },
+const useStyles = makeStyles(() => ({
+  nome: { fontFamily: FONTS.bodyExtraBold, fontSize: 17, color: COLORS.text },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   foot: { flexDirection: "row", justifyContent: "space-between", marginTop: 8 },
   codigo: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.orange, marginTop: 8 },
-});
+}));

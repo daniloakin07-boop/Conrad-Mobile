@@ -4,9 +4,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../AuthContext";
 import { ehEducador } from "../format";
 import { COLORS, FONTS, RADIUS } from "../theme";
+import { makeStyles } from "./estilos";
 
 // Container padrão das telas: scroll, pull-to-refresh, loading e erro.
 export default function Page({ children, loading, error, onRefresh }) {
+  const styles = useStyles();
   const [refreshing, setRefreshing] = useState(false);
 
   async function refresh() {
@@ -24,11 +26,11 @@ export default function Page({ children, loading, error, onRefresh }) {
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={[styles.content, { paddingBottom: 32 + insets.bottom }]}
       refreshControl={
-        onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={COLORS.navy} /> : undefined
+        onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={COLORS.text} /> : undefined
       }
     >
       {loading ? (
-        <ActivityIndicator color={COLORS.navy} style={{ marginTop: 40 }} />
+        <ActivityIndicator color={COLORS.text} style={{ marginTop: 40 }} />
       ) : error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
@@ -39,6 +41,7 @@ export default function Page({ children, loading, error, onRefresh }) {
 }
 
 export function Title({ children, sub }) {
+  const styles = useStyles();
   return (
     <View style={{ marginBottom: 16 }}>
       <Text style={styles.title}>{children}</Text>
@@ -48,14 +51,17 @@ export function Title({ children, sub }) {
 }
 
 export function Card({ children, style }) {
+  const styles = useStyles();
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
 export function Empty({ text }) {
+  const styles = useStyles();
   return <Text style={styles.empty}>{text}</Text>;
 }
 
-export function Badge({ label, color = COLORS.navy, bg = "#e6ecf5" }) {
+export function Badge({ label, color = COLORS.text, bg = COLORS.chip }) {
+  const styles = useStyles();
   return (
     <Text style={[styles.badge, { color, backgroundColor: bg }]}>{label}</Text>
   );
@@ -63,6 +69,7 @@ export function Badge({ label, color = COLORS.navy, bg = "#e6ecf5" }) {
 
 // Seletor em abas (ex.: Atividades | Avaliações).
 export function Segmented({ options, value, onChange }) {
+  const styles = useStyles();
   return (
     <View style={styles.seg}>
       {options.map(([k, label]) => (
@@ -76,6 +83,7 @@ export function Segmented({ options, value, onChange }) {
 
 // Chips de filtro (ex.: turmas).
 export function Chips({ options, value, onChange }) {
+  const styles = useStyles();
   return (
     <View style={styles.chips}>
       {options.map(([k, label]) => (
@@ -89,6 +97,7 @@ export function Chips({ options, value, onChange }) {
 
 // Protege telas por perfil (o servidor também valida: isto só evita telas quebradas).
 export function SoPara({ tipo, children }) {
+  const styles = useStyles();
   const { usuario } = useAuth();
   const ok = tipo === "educador" ? ehEducador(usuario) : !ehEducador(usuario);
   if (ok) return children;
@@ -101,16 +110,16 @@ export function SoPara({ tipo, children }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   seg: { flexDirection: "row", gap: 8, marginBottom: 12 },
   segItem: { flex: 1, minHeight: 44, borderRadius: 10, backgroundColor: COLORS.chip, alignItems: "center", justifyContent: "center", paddingHorizontal: 8 },
   segOn: { backgroundColor: COLORS.navy },
-  segT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.navy },
+  segT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 },
   chip: { minHeight: 40, paddingHorizontal: 14, borderRadius: RADIUS.pill, backgroundColor: COLORS.chip, alignItems: "center", justifyContent: "center" },
   screen: { flex: 1, backgroundColor: COLORS.background },
   content: { padding: 18, paddingBottom: 32 },
-  title: { fontFamily: FONTS.display, fontSize: 28, color: COLORS.navy, letterSpacing: 0.5 },
+  title: { fontFamily: FONTS.display, fontSize: 28, color: COLORS.text, letterSpacing: 0.5 },
   sub: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.textMuted, marginTop: 2 },
   card: {
     backgroundColor: COLORS.card,
@@ -131,4 +140,4 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.pill,
     overflow: "hidden",
   },
-});
+}));

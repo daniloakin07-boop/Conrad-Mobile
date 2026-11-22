@@ -9,6 +9,7 @@ import Message from "../../../src/components/Message";
 import { COLORS, FONTS } from "../../../src/theme";
 import { dataBR, pts } from "../../../src/format";
 import Page, { Badge, Card, SoPara, Title } from "../../../src/ui/page";
+import { makeStyles } from "../../../src/ui/estilos";
 
 const LETRAS = "ABCDEF";
 const pad = (n) => String(n).padStart(2, "0");
@@ -72,6 +73,7 @@ function AtividadeAluno() {
 
 // ---------- modo texto (uma resposta livre) ----------
 function ModoTexto({ a, recarregar }) {
+  const s = useS();
   const [resp, setResp] = useState(a.resposta || "");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -99,7 +101,7 @@ function ModoTexto({ a, recarregar }) {
         </View>
       </Card>
       {corrigida && (
-        <Card style={{ backgroundColor: "#dcf3e6" }}>
+        <Card style={{ backgroundColor: COLORS.successBg }}>
           <Text style={s.nota}>Nota: {a.nota != null ? pts(a.nota) : "–"} / {pts(a.valor_maximo)}</Text>
           {a.feedback ? <Text style={s.p}>Feedback: {a.feedback}</Text> : null}
         </Card>
@@ -114,7 +116,7 @@ function ModoTexto({ a, recarregar }) {
           onChangeText={setResp}
           maxLength={5000}
           placeholder="Escreva aqui a sua resposta…"
-          placeholderTextColor="#9aa1ab"
+          placeholderTextColor={COLORS.placeholder}
         />
         <Message type={msg?.t} text={msg?.m} />
         {corrigida ? (
@@ -132,6 +134,7 @@ function ModoTexto({ a, recarregar }) {
 
 // ---------- modo questões (objetivas/discursivas, com cronômetro) ----------
 function ModoQuestoes({ d, recarregar }) {
+  const s = useS();
   const at = d.atividade;
   const estado = d.estado;
   const { usuario } = useAuth();
@@ -243,7 +246,7 @@ function ModoQuestoes({ d, recarregar }) {
         </View>
       )}
       {estado === "enviada" && (
-        <Card style={{ backgroundColor: "#dcf3e6" }}>
+        <Card style={{ backgroundColor: COLORS.successBg }}>
           <Text style={s.p}>Respostas enviadas. {at.tempo_limite_min ? "Aguarde a correção do professor." : "Você pode atualizá-las até o professor corrigir."}</Text>
         </Card>
       )}
@@ -282,7 +285,7 @@ function ModoQuestoes({ d, recarregar }) {
                 value={corrigida ? q.resposta || "" : r.resposta || ""}
                 onChangeText={(v) => setRespostas((m) => ({ ...m, [q.id]: { ...m[q.id], resposta: v } }))}
                 placeholder="Escreva aqui a sua resposta…"
-                placeholderTextColor="#9aa1ab"
+                placeholderTextColor={COLORS.placeholder}
               />
             )}
             {corrigida && q.comentario ? <Text style={s.coment}>Comentário do professor: {q.comentario}</Text> : null}
@@ -301,20 +304,20 @@ function ModoQuestoes({ d, recarregar }) {
   );
 }
 
-const s = StyleSheet.create({
-  p: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, lineHeight: 20, marginTop: 4 },
-  h: { fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.navy },
-  nota: { fontFamily: FONTS.bodyExtraBold, fontSize: 18, color: "#1d6b43" },
+const useS = makeStyles(() => ({
+  p: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, lineHeight: 20, marginTop: 4 },
+  h: { fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.text },
+  nota: { fontFamily: FONTS.bodyExtraBold, fontSize: 18, color: COLORS.successText },
   aviso: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.error, marginTop: 8 },
-  area: { minHeight: 110, borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 8, padding: 10, marginTop: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, textAlignVertical: "top", backgroundColor: COLORS.white },
+  area: { minHeight: 110, borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 8, padding: 10, marginTop: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, textAlignVertical: "top", backgroundColor: COLORS.card },
   timer: { backgroundColor: COLORS.navy, borderRadius: 12, padding: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
   timerL: { fontFamily: FONTS.bodyBold, fontSize: 13, color: "#dfe7f6" },
   timerV: { fontFamily: FONTS.display, fontSize: 28, color: COLORS.white },
   qTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   alt: { flexDirection: "row", gap: 8, alignItems: "flex-start", borderWidth: 1, borderColor: COLORS.border, borderRadius: 10, padding: 10, marginTop: 8 },
   altOn: { borderColor: COLORS.navy, backgroundColor: "#eaf1ff" },
-  altCerta: { borderColor: COLORS.success, backgroundColor: "#dcf3e6" },
-  altErrada: { borderColor: COLORS.error, backgroundColor: "#fbe2df" },
-  letra: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.navy, marginTop: 4 },
-  coment: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.navy, fontStyle: "italic", marginTop: 8 },
-});
+  altCerta: { borderColor: COLORS.success, backgroundColor: COLORS.successBg },
+  altErrada: { borderColor: COLORS.error, backgroundColor: COLORS.errorBg },
+  letra: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.text, marginTop: 4 },
+  coment: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.text, fontStyle: "italic", marginTop: 8 },
+}));

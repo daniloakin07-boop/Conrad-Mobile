@@ -16,10 +16,12 @@ import Button from "../src/components/Button";
 import Message from "../src/components/Message";
 import TextField from "../src/components/TextField";
 import { COLORS, FONTS } from "../src/theme";
+import { makeStyles } from "../src/ui/estilos";
 
 const logo = require("../assets/images/logo.png");
 
 export default function Login() {
+  const styles = useStyles();
   const router = useRouter();
   const { login } = useAuth();
 
@@ -76,7 +78,7 @@ export default function Login() {
               <Ionicons
                 name={lembrar ? "checkbox" : "square-outline"}
                 size={18}
-                color={COLORS.navy}
+                color={COLORS.text}
               />
               <Text style={styles.lembrarText}>Lembrar-me</Text>
             </Pressable>
@@ -101,7 +103,7 @@ export default function Login() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   scroll: {
     flexGrow: 1,
     backgroundColor: COLORS.background,
@@ -109,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.display,
     fontSize: 24,
-    color: COLORS.navy,
+    color: COLORS.text,
     marginBottom: 4,
     textAlign: "center",
   },
@@ -141,8 +143,8 @@ const styles = StyleSheet.create({
   },
   lembrar: { flexDirection: "row", alignItems: "center", gap: 6 },
   lembrarText: { fontFamily: FONTS.bodySemiBold, fontSize: 13, color: COLORS.text },
-  esqueceu: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.navy },
+  esqueceu: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
   linkRow: { flexDirection: "row", justifyContent: "center", marginTop: 16, flexWrap: "wrap" },
   linkText: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted },
-  link: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.navy },
-});
+  link: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.text },
+}));

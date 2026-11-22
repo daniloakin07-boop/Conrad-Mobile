@@ -9,8 +9,10 @@ import TextField from "../src/components/TextField";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function Perfil() {
+  const styles = useStyles();
   const { usuario, setUsuario } = useAuth();
   const { data, loading, error, reload } = useApi(() => api.perfil(), []);
   const [nome, setNome] = useState("");
@@ -91,9 +93,9 @@ export default function Perfil() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   avatar: { width: 96, height: 96, borderRadius: 48 },
   avatarVazio: { backgroundColor: COLORS.navy, alignItems: "center", justifyContent: "center" },
   avatarT: { fontFamily: FONTS.display, fontSize: 34, color: COLORS.white },
   dica: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 8 },
-});
+}));

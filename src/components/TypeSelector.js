@@ -1,10 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS } from "../theme";
+import { makeStyles } from "../ui/estilos";
 
 // Mirrors .tipo-usuario: two label-as-button options, selected one goes
 // navy-filled. Web version drives this off <input type="radio" name="tipo">;
 // here it's just controlled state since there's no native radio primitive.
 export default function TypeSelector({ label, options, value, onChange }) {
+  const styles = useStyles();
   return (
     <View style={styles.wrap}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
@@ -28,7 +30,7 @@ export default function TypeSelector({ label, options, value, onChange }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   wrap: { marginTop: 12 },
   label: {
     fontFamily: FONTS.bodyBold,
@@ -58,4 +60,4 @@ const styles = StyleSheet.create({
   pillLabelSelected: {
     color: COLORS.white,
   },
-});
+}));

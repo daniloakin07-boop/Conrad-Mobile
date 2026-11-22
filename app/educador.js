@@ -7,8 +7,10 @@ import Button from "../src/components/Button";
 import { pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Empty, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function PainelEducador() {
+  const styles = useStyles();
   const { usuario } = useAuth();
   const router = useRouter();
   const turmas = useApi(() => api.turmas(), []);
@@ -98,6 +100,7 @@ export default function PainelEducador() {
 }
 
 function Stat({ n, label }) {
+  const styles = useStyles();
   return (
     <View style={styles.stat}>
       <Text style={styles.statN}>{n}</Text>
@@ -106,14 +109,14 @@ function Stat({ n, label }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   stats: { flexDirection: "row", gap: 10, marginBottom: 12 },
   stat: { flex: 1, backgroundColor: COLORS.navy, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
   statN: { fontFamily: FONTS.bodyExtraBold, fontSize: 26, color: COLORS.white },
   statL: { fontFamily: FONTS.bodyBold, fontSize: 11, color: "#dfe7f6", marginTop: 2 },
   acoes: { flexDirection: "row", gap: 10, marginBottom: 12 },
-  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 8 },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text, marginBottom: 8 },
   row: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 10, minHeight: 48, borderTopWidth: 1, borderTopColor: COLORS.hairline },
-  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
-});
+}));

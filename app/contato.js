@@ -5,6 +5,7 @@ import Button from "../src/components/Button";
 import Message from "../src/components/Message";
 import TextField from "../src/components/TextField";
 import { COLORS, FONTS } from "../src/theme";
+import { makeStyles } from "../src/ui/estilos";
 
 // contato.html wasn't part of this upload, so these channel details are
 // placeholders reconstructed from the .canal-item styling in auth.css —
@@ -24,6 +25,7 @@ const FAQ = [
 ];
 
 export default function Contato() {
+  const styles = useStyles();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [mensagemTexto, setMensagemTexto] = useState("");
@@ -99,12 +101,12 @@ export default function Contato() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   scroll: { flexGrow: 1, backgroundColor: COLORS.background, padding: 20 },
-  title: { fontFamily: FONTS.display, fontSize: 26, color: COLORS.navy, marginTop: 8 },
+  title: { fontFamily: FONTS.display, fontSize: 26, color: COLORS.text, marginTop: 8 },
   subtitle: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted, marginBottom: 20 },
   canaisCard: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
@@ -118,18 +120,18 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
   },
-  canalLabel: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.navy },
+  canalLabel: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
   canalValue: { fontFamily: FONTS.body, fontSize: 12.5, color: COLORS.textMuted, marginTop: 2 },
   faqTitulo: {
     fontFamily: FONTS.display,
     fontSize: 18,
     letterSpacing: 0.5,
-    color: COLORS.navy,
+    color: COLORS.text,
     marginTop: 4,
     marginBottom: 10,
   },
   faqItem: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 6,
@@ -138,11 +140,11 @@ const styles = StyleSheet.create({
   },
   faqText: { fontFamily: FONTS.bodyBold, fontSize: 13.5, color: COLORS.text },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
     padding: 20,
     marginBottom: 24,
   },
-});
+}));

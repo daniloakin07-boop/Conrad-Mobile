@@ -4,6 +4,7 @@ import Button from "../src/components/Button";
 import { dataBR, dataHoraBR, pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Empty, SoPara, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 // Boletim do aluno: dados de GET /api/boletim (nota convertida para escala 10 pelo servidor).
 export default function BoletimTela() {
@@ -15,6 +16,7 @@ export default function BoletimTela() {
 }
 
 function Boletim() {
+  const styles = useStyles();
   const { data, loading, error, reload } = useApi(() => api.boletim(), []);
   const lista = data?.atividades || [];
 
@@ -96,15 +98,15 @@ function Boletim() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   media: { backgroundColor: COLORS.navy, alignItems: "center" },
   mediaL: { fontFamily: FONTS.bodyBold, fontSize: 12, color: "#dfe7f6" },
   mediaN: { fontFamily: FONTS.display, fontSize: 52, color: COLORS.white },
   mediaS: { fontFamily: FONTS.body, fontSize: 12, color: "#dfe7f6" },
   aviso: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.warnText, lineHeight: 19 },
   row: { flexDirection: "row", alignItems: "center", gap: 10 },
-  titulo: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.navy },
+  titulo: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.text },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   nota: { fontFamily: FONTS.display, fontSize: 30, color: COLORS.orange },
   rodape: { fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted2, textAlign: "center", marginTop: 10 },
-});
+}));

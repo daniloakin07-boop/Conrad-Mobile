@@ -16,6 +16,7 @@ import Message from "../src/components/Message";
 import TextField from "../src/components/TextField";
 import TypeSelector from "../src/components/TypeSelector";
 import { COLORS, FONTS } from "../src/theme";
+import { makeStyles } from "../src/ui/estilos";
 
 const logo = require("../assets/images/logo.png");
 
@@ -25,6 +26,7 @@ const TIPOS = [
 ];
 
 export default function Cadastro() {
+  const styles = useStyles();
   const router = useRouter();
   const { cadastrar } = useAuth();
 
@@ -105,10 +107,10 @@ export default function Cadastro() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   scroll: { flexGrow: 1, backgroundColor: COLORS.background, padding: 20 },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 8,
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.display,
     fontSize: 24,
-    color: COLORS.navy,
+    color: COLORS.text,
     marginBottom: 4,
     textAlign: "center",
   },
@@ -132,5 +134,5 @@ const styles = StyleSheet.create({
   },
   linkRow: { flexDirection: "row", justifyContent: "center", marginTop: 16, flexWrap: "wrap" },
   linkText: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted },
-  link: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.navy },
-});
+  link: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.text },
+}));

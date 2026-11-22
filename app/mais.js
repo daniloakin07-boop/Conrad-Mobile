@@ -4,8 +4,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../src/AuthContext";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function Mais() {
+  const styles = useStyles();
   const { usuario, logout } = useAuth();
   const router = useRouter();
   const isEducador = usuario.tipo === "educador";
@@ -32,9 +34,9 @@ export default function Mais() {
       <Card style={{ paddingVertical: 4 }}>
         {itens.map(([icon, label, rota], i) => (
           <Pressable key={rota} style={[styles.row, i > 0 && styles.border]} onPress={() => router.push(rota)}>
-            <Ionicons name={icon} size={20} color={COLORS.navy} />
+            <Ionicons name={icon} size={20} color={COLORS.text} />
             <Text style={styles.label}>{label}</Text>
-            <Ionicons name="chevron-forward" size={18} color="#9aa1ab" />
+            <Ionicons name="chevron-forward" size={18} color={COLORS.placeholder} />
           </Pressable>
         ))}
         <Pressable style={[styles.row, styles.border]} onPress={sair}>
@@ -46,8 +48,8 @@ export default function Mais() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   row: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 14 },
-  border: { borderTopWidth: 1, borderTopColor: "#eef1f4" },
-  label: { flex: 1, fontFamily: FONTS.bodySemiBold, fontSize: 15, color: COLORS.navy },
-});
+  border: { borderTopWidth: 1, borderTopColor: COLORS.hairline },
+  label: { flex: 1, fontFamily: FONTS.bodySemiBold, fontSize: 15, color: COLORS.text },
+}));

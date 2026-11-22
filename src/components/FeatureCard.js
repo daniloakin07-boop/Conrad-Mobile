@@ -1,25 +1,31 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
 import { COLORS, FONTS, RADIUS } from "../theme";
+import { makeStyles } from "../ui/estilos";
 
-// Mirrors .card-simples from the recursos-simples grid on the home page
+// Espelha .card-simples da seção "Recursos" da página inicial do Web.
+// `icon` é o nome de um ícone Ionicons (resolvido na renderização, para seguir o tema).
 export default function FeatureCard({ icon, title, description }) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
-      <View style={styles.iconWrap}>{icon}</View>
+      <View style={styles.iconWrap}>
+        <Ionicons name={icon} size={22} color={COLORS.iconColor} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.desc}>{description}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
     padding: 16,
-    width: "47%",
+    width: "48%",
     marginBottom: 14,
   },
   iconWrap: {
@@ -31,16 +37,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 10,
   },
-  title: {
-    fontFamily: FONTS.bodyBold,
-    fontSize: 14,
-    color: COLORS.navy,
-    marginBottom: 4,
-  },
-  desc: {
-    fontFamily: FONTS.body,
-    fontSize: 12.5,
-    color: COLORS.textMuted2,
-    lineHeight: 18,
-  },
-});
+  title: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.text, marginBottom: 4 },
+  desc: { fontFamily: FONTS.body, fontSize: 12.5, color: COLORS.textMuted2, lineHeight: 18 },
+}));

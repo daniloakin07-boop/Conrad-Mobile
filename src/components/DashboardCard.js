@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS, RADIUS } from "../theme";
+import { makeStyles } from "../ui/estilos";
 
 export default function DashboardCard({ icon, title, emptyText, children }) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
@@ -13,9 +15,9 @@ export default function DashboardCard({ icon, title, emptyText, children }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: RADIUS.lg,
@@ -31,7 +33,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.bodyBold,
     fontSize: 15,
-    color: COLORS.navy,
+    color: COLORS.text,
   },
   empty: {
     fontFamily: FONTS.body,
@@ -39,4 +41,4 @@ const styles = StyleSheet.create({
     color: COLORS.textMuted2,
     lineHeight: 19,
   },
-});
+}));

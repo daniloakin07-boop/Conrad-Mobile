@@ -9,14 +9,18 @@ import { COLORS, FONTS } from "../../src/theme";
 import { dataBRparaISO, mascaraData, num } from "../../src/format";
 import Page, { Card, SoPara, Title } from "../../src/ui/page";
 import { useApi } from "../../src/api";
+import { makeStyles } from "../../src/ui/estilos";
 
+const MIN_ALTERNATIVAS = 2;
+const MAX_ALTERNATIVAS = 6;
+const MAX_TEMPO_MIN = 600;
 const LETRAS = "ABCDEF";
 const novaQuestao = (tipo) => ({
   tipo,
   enunciado: "",
   pontos: "1",
   alternativas: ["", "", "", ""],
-  correta: 0,
+  correta: null, // o educador precisa marcar a correta (como no Web)
 });
 
 export default function NovaAtividadeTela() {
@@ -28,6 +32,7 @@ export default function NovaAtividadeTela() {
 }
 
 function NovaAtividade() {
+  const styles = useStyles();
   const { tipo: tipoParam, turmaId: turmaParam } = useLocalSearchParams();
   const tipo = tipoParam === "avaliacao" ? "avaliacao" : "atividade";
   const rotulo = tipo === "avaliacao" ? "avaliação" : "atividade";
@@ -53,18 +58,33 @@ function NovaAtividade() {
   const setAlt = (i, k, v) =>
     setQuestoes((qs) => qs.map((q, j) => (j === i ? { ...q, alternativas: q.alternativas.map((a, m) => (m === k ? v : a)) } : q)));
 
+  const addAlt = (i) =>
+    setQuestoes((qs) => qs.map((q, j) => (j === i && q.alternativas.length < MAX_ALTERNATIVAS ? { ...q, alternativas: [...q.alternativas, ""] } : q)));
+  const delAlt = (i, k) =>
+    setQuestoes((qs) =>
+      qs.map((q, j) => {
+        if (j !== i || q.alternativas.length <= MIN_ALTERNATIVAS) return q;
+        let correta = q.correta;
+        if (correta === k) correta = null;
+        else if (correta !== null && correta > k) correta -= 1;
+        return { ...q, correta, alternativas: q.alternativas.filter((_, m) => m !== k) };
+      }),
+    );
+
   function validar() {
     if (!turmaId) return "Selecione a turma em que o conteúdo será publicado.";
     if (!titulo.trim() || !data.trim() || !descricao.trim()) return "Preencha título, data e descrição.";
     if (!dataBRparaISO(data)) return "Informe uma data válida no formato DD/MM/AAAA (ex.: 05/12/2026).";
     if (!temQuestoes && !(num(valor) > 0)) return "Informe um valor/pontuação maior que zero.";
-    if (usaTempo && !(Number.isInteger(num(tempo)) && num(tempo) > 0)) return "Informe o tempo limite em minutos.";
+    if (usaTempo && !(Number.isInteger(num(tempo)) && num(tempo) >= 1 && num(tempo) <= MAX_TEMPO_MIN))
+      return `O tempo limite deve ser um número inteiro de minutos entre 1 e ${MAX_TEMPO_MIN}.`;
     for (let i = 0; i < questoes.length; i++) {
       const q = questoes[i];
       const n = `Questão ${i + 1}: `;
       if (!q.enunciado.trim()) return n + "escreva o enunciado.";
       if (!(num(q.pontos) > 0)) return n + "informe os pontos.";
       if (q.tipo === "objetiva" && q.alternativas.some((a) => !a.trim())) return n + "preencha todas as alternativas.";
+      if (q.tipo === "objetiva" && (q.correta === null || q.correta < 0 || q.correta >= q.alternativas.length)) return n + "marque qual alternativa é a correta.";
     }
     return null;
   }
@@ -158,8 +178,16 @@ function NovaAtividade() {
                       <Text style={[styles.letraT, q.correta === k && { color: COLORS.white }]}>{LETRAS[k]}</Text>
                     </Pressable>
                     <TextField style={{ flex: 1 }} value={a} onChangeText={(v) => setAlt(i, k, v)} placeholder={`Alternativa ${LETRAS[k]}`} />
+                    {q.alternativas.length > MIN_ALTERNATIVAS ? (
+                      <Pressable onPress={() => delAlt(i, k)} accessibilityRole="button" accessibilityLabel={`Remover alternativa ${LETRAS[k]}`} hitSlop={8}>
+                        <Text style={styles.rem}>✕</Text>
+                      </Pressable>
+                    ) : null}
                   </View>
                 ))}
+                {q.alternativas.length < MAX_ALTERNATIVAS ? (
+                  <Button label="+ Alternativa" variant="solid" onPress={() => addAlt(i)} />
+                ) : null}
               </>
             )}
           </Card>
@@ -178,20 +206,20 @@ function NovaAtividade() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   label: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.text },
   vazio: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.textMuted2, marginTop: 6 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, backgroundColor: "#e6ecf5" },
+  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, backgroundColor: COLORS.chip },
   chipOn: { backgroundColor: COLORS.navy },
-  chipT: { fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.navy },
+  chipT: { fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.text },
   switchRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 14 },
-  secao: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginVertical: 8 },
+  secao: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text, marginVertical: 8 },
   qHead: { flexDirection: "row", justifyContent: "space-between" },
-  qT: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.navy },
+  qT: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.text },
   rem: { fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.error },
   altRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  letra: { width: 34, height: 34, borderRadius: 17, backgroundColor: "#e6ecf5", alignItems: "center", justifyContent: "center", marginTop: 12 },
+  letra: { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.chip, alignItems: "center", justifyContent: "center", marginTop: 12 },
   letraOn: { backgroundColor: COLORS.success },
-  letraT: { fontFamily: FONTS.bodyBold, color: COLORS.navy },
-});
+  letraT: { fontFamily: FONTS.bodyBold, color: COLORS.text },
+}));

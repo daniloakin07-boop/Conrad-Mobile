@@ -12,8 +12,10 @@ import { BASE_URL } from "../src/api";
 import { useAuth } from "../src/AuthContext";
 import { conectarChat } from "../src/components/socket";
 import { COLORS, FONTS } from "../src/theme";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function Conversa() {
+  const s = useS();
   const { turmaId, participanteId, nome } = useLocalSearchParams();
   const { usuario } = useAuth();
   const [mensagens, setMensagens] = useState([]);
@@ -102,13 +104,13 @@ export default function Conversa() {
       />
       {status ? <Text style={s.status}>{status}</Text> : null}
       <View style={[s.barra, { paddingBottom: 10 + insets.bottom }]}>
-        <Pressable onPress={enviarImagem} hitSlop={8}><Ionicons name="image-outline" size={24} color={COLORS.navy} /></Pressable>
+        <Pressable onPress={enviarImagem} hitSlop={8}><Ionicons name="image-outline" size={24} color={COLORS.text} /></Pressable>
         <TextInput
           style={s.input}
           value={texto}
           onChangeText={setTexto}
           placeholder={gravando ? "Gravando áudio…" : "Mensagem"}
-          placeholderTextColor="#9aa1ab"
+          placeholderTextColor={COLORS.placeholder}
           editable={!gravando}
           multiline
           maxLength={2000}
@@ -126,6 +128,7 @@ export default function Conversa() {
 }
 
 function Bolha({ m, minha }) {
+  const s = useS();
   const [som, setSom] = useState(null);
   useEffect(() => () => { som?.unloadAsync(); }, [som]);
 
@@ -171,18 +174,18 @@ function Bolha({ m, minha }) {
   );
 }
 
-const s = StyleSheet.create({
+const useS = makeStyles(() => ({
   vazio: { textAlign: "center", fontFamily: FONTS.body, fontSize: 13, color: COLORS.textMuted2, marginTop: 30 },
   status: { textAlign: "center", fontFamily: FONTS.body, fontSize: 12, color: COLORS.error, paddingVertical: 4 },
   bolha: { maxWidth: "80%", borderRadius: 14, padding: 10 },
   minha: { alignSelf: "flex-end", backgroundColor: COLORS.navy, borderBottomRightRadius: 4 },
-  outra: { alignSelf: "flex-start", backgroundColor: COLORS.white, borderWidth: 1, borderColor: COLORS.border, borderBottomLeftRadius: 4 },
+  outra: { alignSelf: "flex-start", backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border, borderBottomLeftRadius: 4 },
   autor: { fontFamily: FONTS.bodyBold, fontSize: 11, color: COLORS.orange, marginBottom: 2 },
-  txt: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, lineHeight: 20 },
+  txt: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, lineHeight: 20 },
   hora: { fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted2, alignSelf: "flex-end", marginTop: 3 },
   img: { width: 200, height: 200, borderRadius: 10 },
   audio: { flexDirection: "row", alignItems: "center", gap: 6 },
-  barra: { flexDirection: "row", alignItems: "flex-end", gap: 10, padding: 10, backgroundColor: COLORS.white, borderTopWidth: 1, borderTopColor: COLORS.border },
-  input: { flex: 1, maxHeight: 110, borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy },
+  barra: { flexDirection: "row", alignItems: "flex-end", gap: 10, padding: 10, backgroundColor: COLORS.card, borderTopWidth: 1, borderTopColor: COLORS.border },
+  input: { flex: 1, maxHeight: 110, borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.text },
   send: { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.orange, alignItems: "center", justifyContent: "center" },
-});
+}));

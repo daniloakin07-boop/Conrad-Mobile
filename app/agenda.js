@@ -5,6 +5,7 @@ import Button from "../src/components/Button";
 import TextField from "../src/components/TextField";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, SoPara, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 const DIAS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 const CHAVE = "conrad:agenda";
@@ -20,6 +21,7 @@ export default function AgendaTela() {
 }
 
 function Agenda() {
+  const styles = useStyles();
   const [eventos, setEventos] = useState([]);
   const [novo, setNovo] = useState(false);
   const [dia, setDia] = useState("Seg");
@@ -85,14 +87,14 @@ function Agenda() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   dias: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  dia: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, backgroundColor: "#e6ecf5" },
+  dia: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8, backgroundColor: COLORS.chip },
   diaOn: { backgroundColor: COLORS.navy },
-  diaT: { fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.navy },
-  diaTitulo: { fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.navy, marginBottom: 4 },
+  diaT: { fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.text },
+  diaTitulo: { fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.text, marginBottom: 4 },
   livre: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.textMuted },
   evento: { paddingVertical: 6 },
-  evT: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  evT: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text },
   dica: { fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted2, textAlign: "center" },
-});
+}));

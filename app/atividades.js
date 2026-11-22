@@ -7,6 +7,7 @@ import Button from "../src/components/Button";
 import { dataBR, ehEducador, pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Chips, Empty, Segmented, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 // Lista de atividades/avaliações. Mesmos filtros do Web (turma + tipo).
 //  - educador: suas publicações, com contagem de entregas -> abre a correção
@@ -78,6 +79,7 @@ export default function Atividades() {
 }
 
 function Meta({ a }) {
+  const s = useS();
   return (
     <Text style={s.meta}>
       {a.disciplina} · {a.turma} · Prazo: {dataBR(a.data_aplicacao)} · {pts(a.valor_maximo)} pts
@@ -86,6 +88,7 @@ function Meta({ a }) {
 }
 
 function ItemEducador({ a, router }) {
+  const s = useS();
   const total = Number(a.total_entregas || 0);
   const corrigidas = Number(a.corrigidas || 0);
   return (
@@ -115,6 +118,7 @@ function situacao(a) {
 }
 
 function ItemAluno({ a, router }) {
+  const s = useS();
   const st = situacao(a);
   return (
     <Pressable onPress={() => router.push(`/atividade/${a.id}`)}>
@@ -130,9 +134,9 @@ function ItemAluno({ a, router }) {
   );
 }
 
-const s = StyleSheet.create({
-  titulo: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy },
+const useS = makeStyles(() => ({
+  titulo: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 3 },
   rodape: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 },
   link: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.orange },
-});
+}));

@@ -5,8 +5,10 @@ import { api } from "../src/api";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Empty, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
+import { makeStyles } from "../src/ui/estilos";
 
 export default function ChatLista() {
+  const s = useS();
   const router = useRouter();
   const { data, loading, error, reload } = useApi(() => api.chatContatos(), []);
   const contatos = data?.contatos || [];
@@ -41,7 +43,7 @@ export default function ChatLista() {
                   <Text style={s.nome}>{c.participanteNome}</Text>
                   <Text style={s.papel}>{c.participantePapel}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color="#9aa1ab" />
+                <Ionicons name="chevron-forward" size={18} color={COLORS.placeholder} />
               </Pressable>
             ))}
           </Card>
@@ -51,12 +53,12 @@ export default function ChatLista() {
   );
 }
 
-const s = StyleSheet.create({
-  turma: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.navy, paddingVertical: 8 },
+const useS = makeStyles(() => ({
+  turma: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.text, paddingVertical: 8 },
   disc: { fontFamily: FONTS.body, color: COLORS.textMuted },
-  row: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: "#eef1f4" },
+  row: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: COLORS.hairline },
   avatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.navy, alignItems: "center", justifyContent: "center" },
   avatarT: { fontFamily: FONTS.bodyBold, fontSize: 15, color: COLORS.white },
-  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text },
   papel: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted },
-});
+}));

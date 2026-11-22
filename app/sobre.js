@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS } from "../src/theme";
+import { makeStyles } from "../src/ui/estilos";
 
 const BLOCOS = [
   ["01", "Nosso propósito", "Facilitar o acesso à educação e aproximar as pessoas que fazem parte dela, com ferramentas simples para o dia a dia escolar."],
@@ -8,6 +9,7 @@ const BLOCOS = [
 ];
 
 export default function Sobre() {
+  const styles = useStyles();
   return (
     <ScrollView style={{ flex: 1, backgroundColor: COLORS.background }} contentContainerStyle={{ padding: 18 }}>
       <View style={styles.hero}>
@@ -29,14 +31,14 @@ export default function Sobre() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   hero: { backgroundColor: COLORS.navy, borderRadius: 14, padding: 20, marginBottom: 18 },
   kicker: { fontFamily: FONTS.bodyBold, fontSize: 11, color: COLORS.orange, letterSpacing: 1 },
   heroT: { fontFamily: FONTS.display, fontSize: 34, color: COLORS.white, marginVertical: 6 },
   heroP: { fontFamily: FONTS.body, fontSize: 14, color: "#dfe7f6", lineHeight: 21 },
-  h2: { fontFamily: FONTS.display, fontSize: 24, color: COLORS.navy, marginBottom: 10 },
-  card: { backgroundColor: COLORS.white, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, padding: 16, marginBottom: 12 },
+  h2: { fontFamily: FONTS.display, fontSize: 24, color: COLORS.text, marginBottom: 10 },
+  card: { backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, padding: 16, marginBottom: 12 },
   n: { fontFamily: FONTS.display, fontSize: 26, color: COLORS.orange },
-  t: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginTop: 2 },
+  t: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text, marginTop: 2 },
   d: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted, marginTop: 4, lineHeight: 20 },
-});
+}));

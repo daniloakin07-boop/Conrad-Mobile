@@ -1,13 +1,15 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { COLORS, FONTS } from "../theme";
+import { makeStyles } from "../ui/estilos";
 
 export default function TextField({ label, style, multiline, ...props }) {
+  const styles = useStyles();
   return (
     <View style={styles.wrap}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
         style={[styles.input, multiline && styles.multiline, style]}
-        placeholderTextColor="#9aa1ab"
+        placeholderTextColor={COLORS.placeholder}
         multiline={multiline}
         {...props}
       />
@@ -15,7 +17,7 @@ export default function TextField({ label, style, multiline, ...props }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   wrap: { marginTop: 12 },
   label: {
     fontFamily: FONTS.bodyBold,
@@ -32,10 +34,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
     fontSize: 14,
     color: COLORS.text,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.card,
   },
   multiline: {
     minHeight: 110,
     textAlignVertical: "top",
   },
-});
+}));

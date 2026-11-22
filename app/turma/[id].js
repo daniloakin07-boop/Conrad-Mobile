@@ -8,9 +8,11 @@ import Button from "../../src/components/Button";
 import { dataBR, ehEducador, pts } from "../../src/format";
 import { COLORS, FONTS } from "../../src/theme";
 import Page, { Badge, Card, Empty, Segmented, Title } from "../../src/ui/page";
+import { makeStyles } from "../../src/ui/estilos";
 
 // Detalhe da turma: mesmas abas do Web (Pessoas, Atividades, Avaliações) + sala de vídeo.
 export default function TurmaDetalhe() {
+  const styles = useStyles();
   const { id } = useLocalSearchParams();
   const { usuario } = useAuth();
   const router = useRouter();
@@ -96,7 +98,7 @@ export default function TurmaDetalhe() {
                       </View>
                       {podeConversar && (
                         <Pressable onPress={() => conversar(p)} hitSlop={10} style={styles.icone} accessibilityLabel={`Conversar com ${p.nome}`}>
-                          <Ionicons name="chatbubble-ellipses-outline" size={22} color={COLORS.navy} />
+                          <Ionicons name="chatbubble-ellipses-outline" size={22} color={COLORS.text} />
                         </Pressable>
                       )}
                       {educador && !ehProfessor && (
@@ -119,6 +121,7 @@ export default function TurmaDetalhe() {
 }
 
 function ConteudosDaTurma({ tipo, turmaId, educador, router }) {
+  const styles = useStyles();
   const { data, loading, error } = useApi(async () => {
     const r = educador
       ? await api.atividadesEducador({ turmaId, tipo })
@@ -154,7 +157,7 @@ function ConteudosDaTurma({ tipo, turmaId, educador, router }) {
               <Card>
                 <Text style={styles.nome}>{a.titulo}</Text>
                 <Text style={styles.meta}>{a.disciplina} · Prazo: {dataBR(a.data_aplicacao)} · {pts(a.valor_maximo)} pts</Text>
-                <Text style={[styles.meta, { color: COLORS.navy, fontFamily: FONTS.bodyBold }]}>{status}</Text>
+                <Text style={[styles.meta, { color: COLORS.text, fontFamily: FONTS.bodyBold }]}>{status}</Text>
               </Card>
             </Pressable>
           );
@@ -164,14 +167,14 @@ function ConteudosDaTurma({ tipo, turmaId, educador, router }) {
   );
 }
 
-const styles = StyleSheet.create({
-  desc: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, lineHeight: 20 },
+const useStyles = makeStyles(() => ({
+  desc: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, lineHeight: 20 },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
   codigo: { fontFamily: FONTS.display, fontSize: 30, color: COLORS.orange, letterSpacing: 2 },
   linkBtn: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 6, minHeight: 36 },
   link: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.orange },
-  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 6 },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text, marginBottom: 6 },
   row: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderTopWidth: 1, borderTopColor: COLORS.hairline },
-  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy, marginBottom: 2 },
+  nome: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text, marginBottom: 2 },
   icone: { minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" },
-});
+}));

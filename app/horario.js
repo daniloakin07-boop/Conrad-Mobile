@@ -3,10 +3,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import horarios from "../src/data/data-horarios";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Title } from "../src/ui/page";
+import { makeStyles } from "../src/ui/estilos";
 
 const DIAS = [["seg", "Seg"], ["ter", "Ter"], ["qua", "Qua"], ["qui", "Qui"], ["sex", "Sex"]];
 
 export default function Horario() {
+  const styles = useStyles();
   const [dia, setDia] = useState("seg");
   return (
     <Page>
@@ -34,15 +36,15 @@ export default function Horario() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   tabs: { flexDirection: "row", gap: 8, marginBottom: 12 },
-  tab: { flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: "#e6ecf5", alignItems: "center" },
+  tab: { flex: 1, paddingVertical: 9, borderRadius: 10, backgroundColor: COLORS.chip, alignItems: "center" },
   tabOn: { backgroundColor: COLORS.navy },
-  tabT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.navy },
+  tabT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
   tabTOn: { color: COLORS.white },
   aula: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 9 },
-  hora: { width: 46, fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.navy },
+  hora: { width: 46, fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.text },
   barra: { width: 3, alignSelf: "stretch", backgroundColor: COLORS.orange, borderRadius: 2 },
-  materia: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  materia: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text },
   sala: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
-});
+}));

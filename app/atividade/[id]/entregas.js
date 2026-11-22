@@ -8,6 +8,7 @@ import { COLORS, FONTS } from "../../../src/theme";
 import { dataHoraBR, num, pts } from "../../../src/format";
 import Page, { Badge, Card, Empty, SoPara, Title } from "../../../src/ui/page";
 import { useApi } from "../../../src/api";
+import { makeStyles } from "../../../src/ui/estilos";
 
 const LETRAS = "ABCDEF";
 
@@ -40,6 +41,7 @@ function Entregas() {
 }
 
 function Entrega({ e, dados, onSaved }) {
+  const s = useS();
   const questoes = dados.questoes || [];
   const comQuestoes = questoes.length > 0;
   const dadas = new Map((e.respostas || []).map((r) => [r.questao_id, r]));
@@ -105,8 +107,8 @@ function Entrega({ e, dados, onSaved }) {
         <Text style={s.aluno}>{e.aluno}</Text>
         <Badge
           label={e.corrigida_em ? `Corrigida: ${pts(e.nota ?? 0)}/${pts(dados.valor_maximo)}` : "Aguardando"}
-          color={e.corrigida_em ? "#1d6b43" : "#8a5a00"}
-          bg={e.corrigida_em ? "#dcf3e6" : "#fdf0cf"}
+          color={e.corrigida_em ? COLORS.successText : COLORS.warnText}
+          bg={e.corrigida_em ? COLORS.successBg : COLORS.warnBg}
         />
       </View>
       <Text style={s.data}>Enviada em {dataHoraBR(e.enviada_em)}</Text>
@@ -127,10 +129,10 @@ function Entrega({ e, dados, onSaved }) {
                 ) : (
                   <Text style={s.resp}>{r.resposta || "Em branco."}</Text>
                 )}
-                <TextInput style={s.input} keyboardType="decimal-pad" placeholder={`Nota (0–${pts(q.pontos)})`} placeholderTextColor="#9aa1ab"
+                <TextInput style={s.input} keyboardType="decimal-pad" placeholder={`Nota (0–${pts(q.pontos)})`} placeholderTextColor={COLORS.placeholder}
                   value={pontos[q.id] ?? ""} onChangeText={(v) => setPontos((m) => ({ ...m, [q.id]: v }))} />
                 {q.tipo === "discursiva" && (
-                  <TextInput style={s.input} placeholder="Comentário (opcional)" placeholderTextColor="#9aa1ab"
+                  <TextInput style={s.input} placeholder="Comentário (opcional)" placeholderTextColor={COLORS.placeholder}
                     value={coments[q.id]} onChangeText={(v) => setComents((m) => ({ ...m, [q.id]: v }))} />
                 )}
               </View>
@@ -141,10 +143,10 @@ function Entrega({ e, dados, onSaved }) {
       ) : (
         <>
           <Text style={s.resp}>{e.resposta}</Text>
-          <TextInput style={s.input} keyboardType="decimal-pad" placeholder={`Nota (0–${pts(dados.valor_maximo)})`} placeholderTextColor="#9aa1ab" value={nota} onChangeText={setNota} />
+          <TextInput style={s.input} keyboardType="decimal-pad" placeholder={`Nota (0–${pts(dados.valor_maximo)})`} placeholderTextColor={COLORS.placeholder} value={nota} onChangeText={setNota} />
         </>
       )}
-      <TextInput style={[s.input, { minHeight: 70, textAlignVertical: "top" }]} multiline placeholder="Feedback geral para o aluno" placeholderTextColor="#9aa1ab" value={feedback} onChangeText={setFeedback} />
+      <TextInput style={[s.input, { minHeight: 70, textAlignVertical: "top" }]} multiline placeholder="Feedback geral para o aluno" placeholderTextColor={COLORS.placeholder} value={feedback} onChangeText={setFeedback} />
       <Message type={msg?.t} text={msg?.m} />
       <View style={{ height: 8 }} />
       <Button label={e.corrigida_em ? "Atualizar correção" : "Salvar correção"} onPress={salvar} loading={busy} />
@@ -152,14 +154,14 @@ function Entrega({ e, dados, onSaved }) {
   );
 }
 
-const s = StyleSheet.create({
+const useS = makeStyles(() => ({
   head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 },
-  aluno: { flex: 1, fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.navy },
+  aluno: { flex: 1, fontFamily: FONTS.bodyExtraBold, fontSize: 15, color: COLORS.text },
   data: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 2, marginBottom: 8 },
-  q: { borderTopWidth: 1, borderTopColor: "#eef1f4", paddingTop: 10, marginTop: 10 },
-  qT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.navy },
-  p: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.navy, marginTop: 3, lineHeight: 19 },
-  resp: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, backgroundColor: "#f3f5f7", borderRadius: 8, padding: 10, marginTop: 6 },
-  input: { borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.navy, backgroundColor: COLORS.white },
+  q: { borderTopWidth: 1, borderTopColor: COLORS.hairline, paddingTop: 10, marginTop: 10 },
+  qT: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
+  p: { fontFamily: FONTS.body, fontSize: 13, color: COLORS.text, marginTop: 3, lineHeight: 19 },
+  resp: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, backgroundColor: COLORS.backgroundAlt, borderRadius: 8, padding: 10, marginTop: 6 },
+  input: { borderWidth: 1, borderColor: COLORS.borderInput, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 9, marginTop: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.text, backgroundColor: COLORS.card },
   total: { fontFamily: FONTS.bodyExtraBold, fontSize: 14, color: COLORS.orange, marginTop: 10 },
-});
+}));

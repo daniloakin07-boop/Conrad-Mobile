@@ -9,10 +9,12 @@ import { dataBR } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Empty, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
+import { makeStyles } from "../src/ui/estilos";
 
 const DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
 
 export default function PainelAluno() {
+  const styles = useStyles();
   const { usuario } = useAuth();
   const router = useRouter();
   const ativ = useApi(() => api.atividadesAluno(), []);
@@ -75,7 +77,7 @@ export default function PainelAluno() {
         ) : (
           pendentes.slice(0, 4).map((a) => (
             <Pressable key={a.id} style={styles.aula} onPress={() => router.push(`/atividade/${a.id}`)}>
-              <Ionicons name="ellipse-outline" size={18} color={COLORS.navy} />
+              <Ionicons name="ellipse-outline" size={18} color={COLORS.text} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.materia}>{a.titulo}</Text>
                 <Text style={styles.sala}>{a.disciplina}{a.data_aplicacao ? ` · ${dataBR(a.data_aplicacao)}` : ""}</Text>
@@ -90,6 +92,7 @@ export default function PainelAluno() {
 }
 
 function Stat({ n, label }) {
+  const styles = useStyles();
   return (
     <View style={styles.stat}>
       <Text style={styles.statN}>{n}</Text>
@@ -98,16 +101,16 @@ function Stat({ n, label }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(() => ({
   stats: { flexDirection: "row", gap: 10, marginBottom: 12 },
   stat: { flex: 1, backgroundColor: COLORS.navy, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
   statN: { fontFamily: FONTS.bodyExtraBold, fontSize: 26, color: COLORS.white },
   statL: { fontFamily: FONTS.bodyBold, fontSize: 11, color: "#dfe7f6", marginTop: 2 },
   rowHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy, marginBottom: 8 },
+  cardTitle: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text, marginBottom: 8 },
   link: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.orange },
-  aula: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#eef1f4" },
-  hora: { width: 46, fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.navy },
-  materia: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.navy },
+  aula: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8, borderTopWidth: 1, borderTopColor: COLORS.hairline },
+  hora: { width: 46, fontFamily: FONTS.bodyBold, fontSize: 12, color: COLORS.text },
+  materia: { fontFamily: FONTS.bodySemiBold, fontSize: 14, color: COLORS.text },
   sala: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 1 },
-});
+}));

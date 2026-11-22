@@ -4,9 +4,11 @@ import { api } from "../src/api";
 import { COLORS, FONTS } from "../src/theme";
 import Page, { Card, Empty, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
+import { makeStyles } from "../src/ui/estilos";
 
 // Mesma sala Jitsi usada pelo site (turma.video_room).
 export default function Salas() {
+  const styles = useStyles();
   const { data, loading, error, reload } = useApi(() => api.turmas(), []);
   const turmas = data?.turmas || [];
 
@@ -35,9 +37,9 @@ export default function Salas() {
   );
 }
 
-const styles = StyleSheet.create({
-  nome: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.navy },
+const useStyles = makeStyles(() => ({
+  nome: { fontFamily: FONTS.bodyExtraBold, fontSize: 16, color: COLORS.text },
   meta: { fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMuted, marginTop: 2, marginBottom: 10 },
   btn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: COLORS.orange, borderRadius: 10, paddingVertical: 11 },
   btnT: { fontFamily: FONTS.bodyBold, fontSize: 14, color: COLORS.white },
-});
+}));
