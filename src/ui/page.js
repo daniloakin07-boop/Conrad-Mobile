@@ -1,3 +1,7 @@
+// ============================================================================
+// src/ui/page.js — peças de interface reutilizáveis
+// Page, Title, Card, Empty, Badge, Segmented, Chips e SoPara (proteção por perfil).
+// ============================================================================
 import { useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -6,7 +10,10 @@ import { ehEducador } from "../format";
 import { COLORS, FONTS, RADIUS } from "../theme";
 import { makeStyles } from "./estilos";
 
-// Container padrão das telas: scroll, pull-to-refresh, loading e erro.
+// Container padrão das telas: rolagem, pull-to-refresh, spinner de carregamento e erro.
+// Props: loading, error, onRefresh (função assíncrona que recarrega os dados).
+// Respeita a safe area inferior (barra de gestos) e mantém o teclado fora do caminho
+// (keyboardShouldPersistTaps).
 export default function Page({ children, loading, error, onRefresh }) {
   const styles = useStyles();
   const [refreshing, setRefreshing] = useState(false);
@@ -40,6 +47,7 @@ export default function Page({ children, loading, error, onRefresh }) {
   );
 }
 
+// Título da tela (fonte Bebas Neue, como os <h1> do Web) com subtítulo opcional.
 export function Title({ children, sub }) {
   const styles = useStyles();
   return (
@@ -50,16 +58,19 @@ export function Title({ children, sub }) {
   );
 }
 
+// Cartão branco com borda e cantos arredondados (.card do Web).
 export function Card({ children, style }) {
   const styles = useStyles();
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
+// Texto de estado vazio ("Nenhuma atividade...").
 export function Empty({ text }) {
   const styles = useStyles();
   return <Text style={styles.empty}>{text}</Text>;
 }
 
+// Selo colorido (situação, tipo, contagem). Props: label, color, bg.
 export function Badge({ label, color = COLORS.text, bg = COLORS.chip }) {
   const styles = useStyles();
   return (
@@ -81,7 +92,7 @@ export function Segmented({ options, value, onChange }) {
   );
 }
 
-// Chips de filtro (ex.: turmas).
+// Chips de filtro em linha (ex.: escolher a turma).
 export function Chips({ options, value, onChange }) {
   const styles = useStyles();
   return (

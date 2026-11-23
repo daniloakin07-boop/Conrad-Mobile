@@ -1,3 +1,10 @@
+// ============================================================================
+// app/cadastro.js — tela de CADASTRO (rota pública "/cadastro")
+// Equivale a pages/cadastro.html + JS/auth.js (formCadastro) do Web.
+// Validações (iguais às do Web; o servidor valida de novo): campos obrigatórios,
+// senha com no mínimo 6 caracteres, confirmação idêntica e tipo de usuário escolhido.
+// O servidor já abre a sessão no cadastro, então o app segue direto ao painel.
+// ============================================================================
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -6,7 +13,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -41,6 +47,11 @@ export default function Cadastro() {
   async function handleSubmit() {
     if (!nome.trim() || !email.trim() || !senha || !confirmasenha) {
       setMensagem({ texto: "Preencha todos os campos.", tipo: "erro" });
+      return;
+    }
+    // Mesmas regras de JS/auth.js (Web): mínimo de 6 caracteres e confirmação igual.
+    if (senha.length < 6) {
+      setMensagem({ texto: "A senha deve ter no mínimo 6 caracteres.", tipo: "erro" });
       return;
     }
     if (senha !== confirmasenha) {

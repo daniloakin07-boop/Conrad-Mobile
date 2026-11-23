@@ -1,3 +1,8 @@
+// ============================================================================
+// app/index.js — HOME pública (rota "/")
+// Equivale a index.html do Web: hero com chamadas Criar conta/Entrar, contador do Projeto
+// Integrador, seção "Recursos" e rodapé com link para o contato.
+// ============================================================================
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";

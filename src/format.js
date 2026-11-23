@@ -1,13 +1,19 @@
-// Formatadores usados em várias telas (mesmo padrão pt-BR do Web).
+// ============================================================================
+// src/format.js — formatadores e utilitários compartilhados pelas telas (padrão pt-BR do Web)
+// ============================================================================
+// pts(n): número com até 2 casas e vírgula decimal (7.5 → "7,5").
 export const pts = (n) => String(Math.round(Number(n) * 100) / 100).replace(".", ",");
+// num(v): converte texto com vírgula decimal em número ("7,5" → 7.5).
 export const num = (v) => Number(String(v).replace(",", "."));
 
+// dataBR("2026-12-05") → "05/12/2026"; vazio vira "—".
 export function dataBR(iso) {
   if (!iso) return "—";
   const [a, m, d] = String(iso).slice(0, 10).split("-");
   return a && m && d ? `${d}/${m}/${a}` : String(iso);
 }
 
+// dataHoraBR(valor) → data e hora locais pt-BR; inválida vira "—".
 export function dataHoraBR(valor) {
   const d = new Date(valor);
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("pt-BR");

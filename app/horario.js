@@ -1,3 +1,8 @@
+// ============================================================================
+// app/horario.js — HORÁRIO DAS AULAS (aluno)
+// Equivale ao horário de pages/dashboard.html + JS/horarios.js. A grade é estática
+// (src/data/data-horarios.js, cópia idêntica de data/horarios.json do Web): não há rota de horários no servidor.
+// ============================================================================
 import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import horarios from "../src/data/data-horarios";

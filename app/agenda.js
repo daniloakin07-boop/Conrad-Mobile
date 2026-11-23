@@ -1,3 +1,9 @@
+// ============================================================================
+// app/agenda.js — AGENDA SEMANAL (educador)
+// Equivale a pages/agenda-professor.html + JS/agenda-professor.js. No Web os eventos existem só
+// na página (somem ao recarregar) e não há rota de agenda no servidor. No app ficam salvos NO APARELHO
+// (AsyncStorage, chave "conrad:agenda"); segure um evento para removê-lo.
+// ============================================================================
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

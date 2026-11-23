@@ -1,3 +1,9 @@
+// ============================================================================
+// app/chat.js — aba "Bate-papo" (lista de contatos)
+// Equivale ao painel lateral de pages/bate-papo.html. GET /api/chat/contatos devolve só
+// contatos com vínculo ativo: educador → alunos de suas turmas; aluno → professores de suas turmas.
+// Os contatos são agrupados por turma e abrem a tela /conversa.
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";

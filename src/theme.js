@@ -116,8 +116,8 @@ export function aplicarPaleta(nome) {
   return paleta;
 }
 
-// Loaded via @expo-google-fonts in app/_layout.js — same two families as
-// the web (Bebas Neue for display/headings, Nunito for body/forms).
+// Fontes carregadas com @expo-google-fonts em app/_layout.js — as mesmas duas famílias
+// do Web: Bebas Neue (títulos) e Nunito (corpo e formulários).
 export const FONTS = {
   display: "BebasNeue_400Regular",
   body: "Nunito_400Regular",

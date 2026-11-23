@@ -1,10 +1,15 @@
+// ============================================================================
+// src/components/TypeSelector.js — escolha do tipo de usuário (Aluno | Educador)
+// Usado em app/cadastro.js.
+// ============================================================================
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, FONTS } from "../theme";
 import { makeStyles } from "../ui/estilos";
 
-// Mirrors .tipo-usuario: two label-as-button options, selected one goes
-// navy-filled. Web version drives this off <input type="radio" name="tipo">;
-// here it's just controlled state since there's no native radio primitive.
+// Espelha .tipo-usuario do Web: duas opções em forma de botão; a escolhida fica
+// preenchida de azul-marinho. No Web isso usa <input type="radio" name="tipo">; aqui é
+// um componente controlado (props: label, options [{label,value}], value, onChange),
+// pois o React Native não tem "radio" nativo.
 export default function TypeSelector({ label, options, value, onChange }) {
   const styles = useStyles();
   return (

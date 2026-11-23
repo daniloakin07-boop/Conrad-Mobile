@@ -1,11 +1,18 @@
+// ============================================================================
+// src/components/Button.js — botão padrão do app
+// Props: label (texto), onPress, variant ("solid" | "cta" | "outline"), loading (mostra
+// spinner e bloqueia toques), disabled e style (ajustes pontuais do chamador).
+// Usado em praticamente todas as telas (login, cadastro, turmas, atividades...).
+// ============================================================================
 import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import { COLORS, FONTS, RADIUS } from "../theme";
 import { makeStyles } from "../ui/estilos";
 
-// Mirrors three button treatments from the web CSS:
-// - solid:   .btn-primario in auth.css      (navy block button, forms)
-// - cta:     .btn-primario in style.css     (orange pill, hero/topo CTA)
-// - outline: .btn-link in style.css         (translucent pill, hero secondary CTA)
+// Variantes de botão, espelhando os botões do CSS do Web:
+// - solid:   .btn-primario dos formulários (bloco azul-marinho, largura total);
+// - cta:     .btn-primario do topo/hero (pílula laranja);
+// - outline: .btn-link do hero (pílula branca com texto azul).
+// As cores vêm de COLORS e acompanham o tema ativo (normal/claro/escuro).
 const variantes = () => ({
   solid: {
     bg: COLORS.navy,

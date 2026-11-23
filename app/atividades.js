@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { api, useApi } from "../src/api";
 import { useAuth } from "../src/AuthContext";
 import Button from "../src/components/Button";
@@ -9,9 +9,15 @@ import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Chips, Empty, Segmented, Title } from "../src/ui/page";
 import { makeStyles } from "../src/ui/estilos";
 
-// Lista de atividades/avaliações. Mesmos filtros do Web (turma + tipo).
-//  - educador: suas publicações, com contagem de entregas -> abre a correção
-//  - aluno: o que as suas turmas publicaram, com situação -> abre a atividade
+// ============================================================================
+// app/atividades.js — aba "Atividades" (atividades e avaliações)
+// Equivale a pages/atividades.html, avaliacoes.html, aluno-atividades.html e
+// professor-correcao.html do Web. Mesmos filtros: tipo (atividade | avaliação) e turma.
+//  • educador: lista o que ele publicou (GET /api/atividades), com a contagem de
+//    entregas/corrigidas, e abre a correção em /atividade/[id]/entregas;
+//  • aluno: lista o que as suas turmas publicaram (GET /api/aluno/atividades), com a
+//    situação (Pendente, Enviada ou Nota), e abre /atividade/[id].
+// ============================================================================
 export default function Atividades() {
   const { usuario } = useAuth();
   const router = useRouter();
@@ -28,7 +34,7 @@ export default function Atividades() {
     return Array.isArray(r) ? r : r.atividades || [];
   }, [tipo, turmaId, educador]);
 
-  // Ao voltar da correção/publicação/entrega, atualiza contagens e status.
+  // Ao voltar da correção, da publicação ou da entrega, atualiza contagens e situação.
   useFocusEffect(
     useCallback(() => {
       lista.reload();
@@ -78,6 +84,7 @@ export default function Atividades() {
   );
 }
 
+// Linha de metadados (disciplina, turma, prazo e valor) comum aos dois perfis.
 function Meta({ a }) {
   const s = useS();
   return (
@@ -87,6 +94,7 @@ function Meta({ a }) {
   );
 }
 
+// Cartão do educador: progresso de correção da atividade.
 function ItemEducador({ a, router }) {
   const s = useS();
   const total = Number(a.total_entregas || 0);
@@ -109,14 +117,14 @@ function ItemEducador({ a, router }) {
   );
 }
 
+// Traduz os campos devolvidos pelo servidor na situação exibida ao aluno.
 function situacao(a) {
   if (a.corrigida_em) return { t: `Nota ${a.nota != null ? pts(a.nota) : "–"}/${pts(a.valor_maximo)}`, c: COLORS.successText, bg: COLORS.successBg };
   if (a.enviada_em) return { t: "Enviada", c: COLORS.navy, bg: COLORS.chip };
-  if (a.tempo_esgotado) return { t: "Tempo esgotado", c: COLORS.error, bg: COLORS.errorBg };
-  if (a.iniciada) return { t: "Em andamento", c: COLORS.warnText, bg: COLORS.warnBg };
   return { t: "Pendente", c: COLORS.warnText, bg: COLORS.warnBg };
 }
 
+// Cartão do aluno: situação da entrega (Pendente / Enviada / Nota).
 function ItemAluno({ a, router }) {
   const s = useS();
   const st = situacao(a);
@@ -127,7 +135,6 @@ function ItemAluno({ a, router }) {
         <Meta a={a} />
         <View style={s.rodape}>
           <Badge label={st.t} color={st.c} bg={st.bg} />
-          {a.tempo_limite_min ? <Text style={s.meta}>{a.tempo_limite_min} min</Text> : null}
         </View>
       </Card>
     </Pressable>

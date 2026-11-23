@@ -1,102 +1,42 @@
-# Conrad Virtual School — Mobile
+# CONRAD Virtual School — Mobile
 
-Versão mobile do projeto web, em React Native + Expo Router, no mesmo
-padrão usado no Coffee Center (Expo Router 4, React Native 0.76, pasta
-`mobile/` na raiz do repo, ao lado de `CSS/`, `JS/`, `img/`, `pages/`).
+Aplicativo mobile do CONRAD, feito com **React Native + Expo (SDK 52) + Expo Router 4**.
+Ele usa o **mesmo back-end e o mesmo banco** da versão Web (`JS/server.js`, `turmas.js`,
+`atividades.js`, `medias.js` e `chat.js`): não há servidor, autenticação nem regras de negócio
+próprios no app.
 
-Usa o **mesmo back-end** (`server.js` / `db.js`) que a versão web — nada
-foi alterado lá. O app só troca `window.location.hostname` (que não existe
-em React Native) por uma detecção automática do IP local em dev, e usa a
-mesma URL de produção que já está em `JS/auth.js`
-(`https://conrad-virtual-school.onrender.com`).
+> A documentação completa (Web + Mobile) está em `DOCUMENTACAO_TECNICA_E_GUIA_DE_ESTUDO_WEB_MOBILE.md`.
 
 ## Como rodar
 
-O zip já vem com esses arquivos na raiz (sem pasta `mobile/` por dentro).
-Se quiser seguir o mesmo padrão do Coffee Center — este projeto como uma
-pasta `mobile/` dentro do repo do site, ao lado de `CSS/`, `JS/`, `img/`,
-`pages/` — extraia o zip numa pasta chamada `mobile` dentro do repo do
-CONRAD. Se for só rodar/testar separado, extraia onde quiser e siga direto:
-
 ```bash
 npm install
-npx expo start
+npx expo start        # abra no Expo Go (celular) ou pressione "a" (Android) / "i" (iOS)
+npm run check         # verificação estática: imports, telas registradas e chamadas de API
+npm run check -- ../Conrad--main   # idem + confere cada rota de src/api.js contra o servidor Web
 ```
 
-Escaneie o QR code com o app Expo Go (Android/iOS), ou pressione `i` / `a`
-no terminal para abrir num simulador/emulador.
+## Endereço da API
 
-Para testar contra o back-end **local** (`npm start` na raiz do projeto,
-porta 3000): seu celular físico e seu computador precisam estar na mesma
-rede Wi-Fi — o app detecta o IP sozinho a partir do endereço que o Expo
-usou para carregar o bundle (ver comentário em `src/api.js`). Rodando num
-**emulador Android** (não celular físico), troque para `10.0.2.2:3000` —
-tem uma linha comentada em `src/api.js` pronta pra isso.
+`src/api.js` escolhe o servidor nesta ordem:
+
+1. variável `EXPO_PUBLIC_API_URL` (ex.: `http://10.0.2.2:3000` no emulador Android);
+2. campo `extra.apiUrl` do `app.json`;
+3. em desenvolvimento: o IP da máquina que serve o Expo, na porta `3000` (celular físico na mesma rede Wi-Fi);
+4. produção: `https://conrad.onrender.com` (a mesma de `JS/config.js` e `JS/auth.js` do Web).
+
+> Correção: versões antigas deste README citavam `conrad-virtual-school.onrender.com`, que não existe no código.
+
+Para testar localmente, rode o servidor Web (`npm start` na pasta do Web, porta 3000) e abra o app
+no mesmo Wi-Fi. No emulador Android use `EXPO_PUBLIC_API_URL=http://10.0.2.2:3000`.
 
 ## Estrutura
 
-```
-mobile/
-├── app/                  # Rotas (Expo Router — cada arquivo é uma tela)
-│   ├── _layout.js         # Stack raiz, carrega fontes, AuthProvider
-│   ├── index.js            # Home
-│   ├── login.js
-│   ├── cadastro.js
-│   ├── contato.js
-│   ├── aluno.js             # protegida — exige sessão + tipo "aluno"
-│   └── educador.js          # protegida — exige sessão + tipo "educador"
-├── src/
-│   ├── theme.js            # cores/fontes extraídas do CSS
-│   ├── api.js               # espelha JS/auth.js, chamando o mesmo back-end
-│   ├── AuthContext.js        # sessão global (/me, /login, /cadastro, /logout)
-│   └── components/
-└── assets/images/           # logo, banner e as 3 fotos de alunos (já tratadas)
+```text
+app/        telas e rotas (Expo Router: um arquivo = uma rota)
+src/        api.js, AuthContext.js, ThemeContext.js, theme.js, format.js, components/, ui/, data/
+assets/     ícone, splash e imagens
+scripts/    check.js (verificação estática)
 ```
 
-## O que é fiel ao original vs. o que foi reconstruído
-
-**Fiel** (extraído direto do CSS/JS que vocês mandaram):
-- Cores, tipografia (Bebas Neue + Nunito), textos de erro/campos obrigatórios
-- Fluxo de login/cadastro/contato: mesmos campos, mesma validação, mesmas
-  chamadas de API (`/login`, `/cadastro`, `/contato`, `/me`, `/logout`)
-- O layout de "cluster de 3 alunos sobrepostos" no hero da Home replica o
-  próprio fallback mobile que já existia em `style.css`
-  (`@media max-width: 760px`)
-
-**Reconstruído — sem o HTML original pra conferir** (nenhum `.html` veio
-no upload, só CSS/JS/back-end):
-- Textos da Home (cards de "recursos") — placeholder, dá pra trocar em
-  `app/index.js` (array `FEATURES`)
-- Canais de contato (e-mail/telefone/horário) e as perguntas do FAQ —
-  placeholder em `app/contato.js` (arrays `CANAIS` e `FAQ`)
-- "Lembrar-me" em `login.js` é só visual (não persiste nada ainda) e
-  "Esqueceu a senha?" mostra um aviso pra usar o Fale Conosco — não existe
-  rota de reset de senha no `server.js`
-- `aluno.js` e `educador.js` — dashboards mínimos. Vocês mencionaram uma
-  tela "Atividades" já prototipada em HTML/CSS/JS em outra sessão; não veio
-  neste upload, então não dá pra portar com fidelidade. Mandem esse código
-  que eu encaixo aqui.
-
-## Coisas que valem a pena revisar
-
-- **`tipo` do usuário**: assumi os valores `"aluno"` e `"educador"` (bate
-  com `paginasProtegidas` em `server.js`). Se o banco grava outra coisa
-  (ex. `"professor"`), ajustar em `cadastro.js` (array `TIPOS`) e nos
-  redirects de `login.js`/`cadastro.js`/`aluno.js`/`educador.js`.
-- **Sessão via cookie**: `server.js` usa `express-session` com cookie.
-  O `fetch` do React Native mantém cookies por domínio automaticamente em
-  iOS/Android (usei `credentials: "include"` pra reforçar isso), então login
-  deve persistir entre telas normalmente — mas cookie de sessão em app
-  nativo é menos padronizado que em navegador. Se dias depois alguém
-  reportar sessão "cortando" sozinha, a causa mais provável é isso, e a
-  solução mais robusta seria migrar `/login` pra devolver um token (JWT)
-  em vez de depender só do cookie.
-- **Ícone/splash**: gerados a partir do logo (`Captura_de_tela..._181529.png`)
-  centralizado num fundo navy. Funcional, mas se vocês tiverem a arte da
-  marca em alta resolução/sem fundo, fica melhor.
-- **`assets/images/auth-banner.png`** (o banner alto usado como
-  `.pagina-auth::before/::after` no CSS) está na pasta mas não é usado em
-  nenhuma tela: o formato dele (bem estreito e alto) é pensado pra painel
-  lateral de desktop e não converte bem pra largura de celular. Login e
-  Cadastro usam só o `logo.png`. Se quiserem aproveitar o banner, ele está
-  pronto pra entrar em algum layout específico (ex.: modo tablet/paisagem).
+Veja a seção 4 do documento unificado para o detalhamento de cada arquivo.

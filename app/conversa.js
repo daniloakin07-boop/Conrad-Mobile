@@ -1,3 +1,12 @@
+// ============================================================================
+// app/conversa.js — CONVERSA privada em tempo real
+// Equivale a JS/chat-privado.js. Usa Socket.IO (src/components/socket.js):
+// chat:entrar (histórico das últimas 100 mensagens), chat:enviar (com confirmação "ack") e
+// chat:mensagem (recebimento). Aceita texto (1–2000), imagem (galeria, via expo-image-picker) e
+// áudio (gravação com expo-av, pedindo permissão do microfone). Anexos (≤ 3 MB) trafegam em Base64
+// e são baixados por GET /api/chat/anexos/:id (exige sessão). O servidor revalida a matrícula a
+// cada envio. Parâmetros de rota: turmaId, participanteId, nome.
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";

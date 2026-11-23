@@ -1,8 +1,13 @@
+// ============================================================================
+// src/components/Message.js — mensagem de erro/sucesso dos formulários
+// Usado por login, cadastro, contato, turmas, perfil, criação e correção de atividades.
+// ============================================================================
 import { StyleSheet, Text } from "react-native";
 import { COLORS, FONTS } from "../theme";
 import { makeStyles } from "../ui/estilos";
 
-// Mirrors .mensagem-auth / .mensagem-auth.sucesso / .mensagem-auth.erro
+// Espelha .mensagem-auth (.sucesso / .erro) do Web. Não renderiza nada se `text` for vazio.
+// Props: text (mensagem) e type ("erro" ou, por padrão, sucesso).
 export default function Message({ text, type }) {
   const styles = useStyles();
   if (!text) return null;

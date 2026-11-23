@@ -4,8 +4,9 @@ import { useTema } from "../ThemeContext";
 import { COLORS } from "../theme";
 import { makeStyles } from "../ui/estilos";
 
-// Botão #theme do cabeçalho do Web: alterna normal -> claro -> escuro -> normal,
-// troca o ícone (◉ ☀ ☾) e o rótulo de acessibilidade, e persiste a escolha.
+// Botão #theme do cabeçalho do Web: alterna normal → claro → escuro → normal,
+// troca o ícone e o rótulo de acessibilidade, e persiste a escolha (ThemeContext).
+// Prop: size (diâmetro do botão). Usado dentro do SiteHeader.
 export default function ThemeToggle({ size = 36 }) {
   const styles = useStyles();
   const { info, alternar } = useTema();

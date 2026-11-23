@@ -1,3 +1,9 @@
+// ============================================================================
+// app/salas.js — SALAS DE VÍDEO
+// Equivale a pages/salas.html + JS/salas.js. Lista as turmas (GET /api/turmas) e abre a sala
+// do Jitsi Meet (campo turma.video_room), a mesma usada pelo site. O código do Conrad não
+// autentica pessoas dentro do Jitsi.
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { api } from "../src/api";
@@ -6,7 +12,6 @@ import Page, { Card, Empty, Title } from "../src/ui/page";
 import { useApi } from "../src/api";
 import { makeStyles } from "../src/ui/estilos";
 
-// Mesma sala Jitsi usada pelo site (turma.video_room).
 export default function Salas() {
   const styles = useStyles();
   const { data, loading, error, reload } = useApi(() => api.turmas(), []);

@@ -2,8 +2,12 @@ import { useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { useTema } from "../ThemeContext";
 
+// ============================================================================
+// src/ui/estilos.js — makeStyles: StyleSheet que acompanha o tema
 // makeStyles(() => ({ ... })) devolve um hook que recria os estilos quando o tema
 // muda. Dentro da fábrica, COLORS já tem os valores do tema atual.
+// Uso: const useStyles = makeStyles(() => ({...}));  const styles = useStyles();
+// ============================================================================
 export function makeStyles(factory) {
   return function useStyles() {
     const { tema } = useTema();

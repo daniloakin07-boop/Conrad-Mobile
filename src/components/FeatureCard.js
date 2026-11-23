@@ -1,3 +1,7 @@
+// ============================================================================
+// src/components/FeatureCard.js — cartão de recurso da Home
+// Props: icon (nome Ionicons), title e description. Usado em app/index.js (seção "Recursos").
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { COLORS, FONTS, RADIUS } from "../theme";

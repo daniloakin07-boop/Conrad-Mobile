@@ -1,3 +1,10 @@
+// ============================================================================
+// app/boletim.js — BOLETIM do aluno
+// Equivale a pages/boletim.html + JS/boletim.js. Dados de GET /api/boletim: o SERVIDOR aplica a
+// regra de negócio (só atividades avaliativas e aplicadas; nota convertida para 0–10 com
+// nota / valor_maximo × 10; média simples arredondada em 2 casas). O app só exibe. O botão
+// "Imprimir/PDF" do Web vira "Compartilhar boletim" (resumo em texto) no celular.
+// ============================================================================
 import { Share, StyleSheet, Text, View } from "react-native";
 import { api, useApi } from "../src/api";
 import Button from "../src/components/Button";
@@ -6,7 +13,7 @@ import { COLORS, FONTS } from "../src/theme";
 import Page, { Badge, Card, Empty, SoPara, Title } from "../src/ui/page";
 import { makeStyles } from "../src/ui/estilos";
 
-// Boletim do aluno: dados de GET /api/boletim (nota convertida para escala 10 pelo servidor).
+// Rota protegida: só alunos (o servidor responde 403 ao educador).
 export default function BoletimTela() {
   return (
     <SoPara tipo="aluno">

@@ -1,3 +1,9 @@
+// ============================================================================
+// app/educador.js — PAINEL DO EDUCADOR (aba "Painel" para contas educador)
+// Equivale a pages/educador.html + JS/educador.js do Web. Dados reais de GET /api/turmas e
+// GET /api/atividades: nº de turmas, total de alunos, entregas a corrigir, atalhos para criar
+// atividade/avaliação, "Para corrigir", "Minhas turmas" e "Atividades recentes".
+// ============================================================================
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

@@ -1,3 +1,9 @@
+// ============================================================================
+// src/components/SiteHeader.js — cabeçalho do app
+// Dois modos: "publico" (telas abertas: logo, Início/Sobre/Contato, tema, Entrar/Criar conta)
+// e "app" (telas logadas: botão voltar, logo, título da tela, tema, perfil e Sair).
+// Usa useSafeAreaInsets para respeitar o entalhe/barra de status. Chamado por app/_layout.js.
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { usePathname, useRouter } from "expo-router";
 import { Pressable, Text, View, useWindowDimensions } from "react-native";

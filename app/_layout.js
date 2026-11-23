@@ -1,3 +1,9 @@
+// ============================================================================
+// app/_layout.js — layout raiz e navegação (Expo Router)
+// Define: carregamento de fontes, provedores globais (Tema e Sessão), rotas públicas,
+// proteção de rotas por sessão e a barra de abas inferior (Painel, Turmas, Atividades,
+// Bate-papo, Mais). A estrutura de arquivos em app/ define as rotas automaticamente.
+// ============================================================================
 import { BebasNeue_400Regular } from "@expo-google-fonts/bebas-neue";
 import {
   Nunito_400Regular,
@@ -23,9 +29,9 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 const PUBLIC_ROUTES = new Set(["index", "login", "cadastro", "contato", "sobre"]);
 const icon = (name) => ({ color, size }) => <Ionicons name={name} size={size} color={color} />;
 
-// Telas que NÃO são abas (detalhes, perfil, etc.): ficam registradas para poder ser
+// Telas que NÃO são abas (detalhes, perfil etc.): ficam registradas para poderem ser
 // abertas com router.push, mas sem botão na barra inferior. Sem isto o Expo Router
-// cria uma aba para cada arquivo de app/.
+// criaria uma aba para cada arquivo de app/. Se criar um arquivo novo em app/, registre-o aqui.
 const OCULTAS = {
   perfil: "Meu perfil",
   boletim: "Boletim",
@@ -41,8 +47,14 @@ const OCULTAS = {
 const PUBLICAS_OCULTAS = ["index", "login", "cadastro", "contato", "sobre"];
 const ABAS = new Set(["aluno", "educador", "turmas", "atividades", "chat", "mais"]);
 
-// Navegação inferior (padrão mobile no lugar do menu lateral do Web).
-// Painel do aluno e do educador são telas diferentes: só uma aparece.
+// Navegação do app.
+//  • Telas públicas (index, login, cadastro, contato, sobre): <Slot/> com o cabeçalho público.
+//  • Enquanto a sessão é verificada (checking): spinner.
+//  • Sem usuário: redireciona para /login (rota protegida).
+//  • Logado: abas inferiores (padrão mobile no lugar do menu lateral do Web). O painel do
+//    aluno e o do educador são telas diferentes: apenas a do perfil do usuário aparece
+//    (href: null esconde a outra). O cabeçalho é o mesmo em todas as telas (SiteHeader),
+//    evitando saltos ao navegar.
 function TabsNavigator() {
   const { usuario, checking } = useAuth();
   const { tema } = useTema();
@@ -110,6 +122,7 @@ function TabsNavigator() {
   );
 }
 
+// Camada interna: barra de status, AuthProvider e navegador de abas.
 function Raiz() {
   const { tema } = useTema();
   // Esconde a splash só quando fontes E tema salvo já estão prontos.
@@ -126,9 +139,9 @@ function Raiz() {
   );
 }
 
+// Componente raiz do Expo Router: carrega as fontes e monta ThemeProvider → Raiz.
 export default function RootLayout() {
-  // As fontes usadas em todo o app (as mesmas do Web). Antes nunca eram carregadas,
-  // então o app caía na fonte do sistema.
+  // Fontes usadas em todo o app (as mesmas do Web); sem elas o app cairia na fonte do sistema.
   const [fontsLoaded, fontError] = useFonts({
     BebasNeue_400Regular,
     Nunito_400Regular,

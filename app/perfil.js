@@ -1,3 +1,10 @@
+// ============================================================================
+// app/perfil.js — PERFIL (aluno e educador)
+// Equivale a pages/perfil-aluno.html + JS/perfil-aluno.js. GET/PUT /perfil: nome, e-mail,
+// "sobre mim", interesses, habilidades (separados por vírgula) e foto (expo-image-picker →
+// data URL JPEG). No Web o perfil do EDUCADOR é só demonstrativo; a rota do servidor serve
+// a qualquer usuário logado, então o app permite editar o perfil nos dois tipos.
+// ============================================================================
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -44,6 +51,7 @@ export default function Perfil() {
     });
     if (r.canceled || !r.assets?.[0]?.base64) return;
     const uri = `data:image/jpeg;base64,${r.assets[0].base64}`;
+    // Limite do servidor para a foto (~1,5 MB em texto base64).
     if (uri.length > 1500000) return setMsg({ t: "erro", m: "Foto muito grande. Escolha outra." });
     setFoto(uri);
   }

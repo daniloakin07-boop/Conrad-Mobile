@@ -1,3 +1,10 @@
+// ============================================================================
+// app/turmas.js — aba "Turmas"
+// Equivale a pages/turmas.html + JS/turmas-page.js do Web.
+//  • educador: cria turma (POST /api/turmas; o servidor gera o código de 8 caracteres);
+//  • aluno: entra com o código (POST /api/turmas/entrar; repetir o código não duplica);
+//  • ambos: lista as próprias turmas (GET /api/turmas) e abre /turma/[id].
+// ============================================================================
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, Pressable, Share, StyleSheet, Text, View } from "react-native";

@@ -1,3 +1,8 @@
+// ============================================================================
+// src/components/ContadorProjeto.js — contador regressivo do Projeto Integrador
+// Porte de JS/contador-projeto.js do Web. O cálculo está em src/projetoIntegrador.js
+// (useContagemRegressiva). Usado em app/index.js.
+// ============================================================================
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 import { useContagemRegressiva } from "../projetoIntegrador";

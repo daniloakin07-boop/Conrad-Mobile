@@ -1,4 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
+// ============================================================================
+// app/login.js — tela de LOGIN (rota pública "/login")
+// Equivale a pages/login.html + JS/auth.js (formLogin) do Web.
+// Fluxo: valida campos → useAuth().login() → POST /login (cookie de sessão) →
+// redireciona pelo tipo do usuário: educador → /educador, aluno → /aluno.
+// Mensagens de erro/sucesso usam o componente <Message>.
+// ============================================================================
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -7,7 +13,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -29,7 +34,6 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [mensagem, setMensagem] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [lembrar, setLembrar] = useState(false);
 
   async function handleSubmit() {
     if (!email.trim() || !senha) {
@@ -73,19 +77,14 @@ export default function Login() {
             placeholder="••••••••"
           />
 
-          <View style={styles.formRow}>
-            <Pressable style={styles.lembrar} onPress={() => setLembrar((v) => !v)}>
-              <Ionicons
-                name={lembrar ? "checkbox" : "square-outline"}
-                size={18}
-                color={COLORS.text}
-              />
-              <Text style={styles.lembrarText}>Lembrar-me</Text>
-            </Pressable>
-            <Pressable onPress={() => setMensagem({ texto: "Fale com a equipe pelo Fale Conosco para redefinir sua senha.", tipo: "sucesso" })}>
-              <Text style={styles.esqueceu}>Esqueceu a senha?</Text>
-            </Pressable>
-          </View>
+          {/* Recuperação de senha: no Web (rec-senha.html) existe só a interface, sem rota no servidor. */}
+          <Pressable
+            style={styles.esqueceuWrap}
+            onPress={() => setMensagem({ texto: "A recuperação automática de senha ainda não existe no servidor. Fale com a equipe pelo Fale Conosco.", tipo: "sucesso" })}
+            accessibilityRole="button"
+          >
+            <Text style={styles.esqueceu}>Esqueceu a senha?</Text>
+          </Pressable>
 
           <Message text={mensagem?.texto} type={mensagem?.tipo} />
 
@@ -132,17 +131,7 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     marginBottom: 8,
   },
-  formRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 14,
-    marginBottom: 4,
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  lembrar: { flexDirection: "row", alignItems: "center", gap: 6 },
-  lembrarText: { fontFamily: FONTS.bodySemiBold, fontSize: 13, color: COLORS.text },
+  esqueceuWrap: { alignSelf: "flex-end", minHeight: 44, justifyContent: "center", marginTop: 6 },
   esqueceu: { fontFamily: FONTS.bodyBold, fontSize: 13, color: COLORS.text },
   linkRow: { flexDirection: "row", justifyContent: "center", marginTop: 16, flexWrap: "wrap" },
   linkText: { fontFamily: FONTS.body, fontSize: 14, color: COLORS.textMuted },

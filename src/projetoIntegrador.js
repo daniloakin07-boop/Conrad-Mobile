@@ -1,3 +1,7 @@
+// ============================================================================
+// src/projetoIntegrador.js — contagem regressiva do Projeto Integrador
+// Cálculo puro (calcularRestante) e hook (useContagemRegressiva), usados por ContadorProjeto.
+// ============================================================================
 import { useEffect, useState } from "react";
 
 // Porte de JS/contador-projeto.js do Web.

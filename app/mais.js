@@ -1,3 +1,8 @@
+// ============================================================================
+// app/mais.js — aba "Mais" (menu secundário)
+// Reúne o que no Web fica no menu lateral e no topo: perfil, horário (aluno) ou agenda
+// (educador), boletim (só aluno), salas de vídeo, Sobre, Fale conosco e Sair.
+// ============================================================================
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
