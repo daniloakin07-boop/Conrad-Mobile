@@ -40,7 +40,7 @@ export default function PainelEducador() {
 
   return (
     <Page onRefresh={reload}>
-      <Title sub="Visão geral das suas turmas">Olá, {usuario.nome.split(" ")[0]}</Title>
+      <Title sub="Visão geral das suas turmas">Olá, {String(usuario?.nome || "Educador").trim().split(/\s+/)[0]}</Title>
 
       <View style={styles.stats}>
         <Stat n={turmas.loading ? "–" : listaTurmas.length} label="Turmas" />

@@ -1,42 +1,169 @@
 # CONRAD Virtual School — Mobile
 
-Aplicativo mobile do CONRAD, feito com **React Native + Expo (SDK 52) + Expo Router 4**.
-Ele usa o **mesmo back-end e o mesmo banco** da versão Web (`JS/server.js`, `turmas.js`,
-`atividades.js`, `medias.js` e `chat.js`): não há servidor, autenticação nem regras de negócio
-próprios no app.
+Aplicativo mobile e web do CONRAD, feito com **React Native + Expo SDK 52 + Expo Router 4**.
+O app Mobile usa o mesmo backend e o mesmo banco de dados PostgreSQL/Supabase da versão Web.
 
-> A documentação completa (Web + Mobile) está em `DOCUMENTACAO_TECNICA_E_GUIA_DE_ESTUDO_WEB_MOBILE.md`.
+## Pré-requisitos
 
-## Como rodar
+- Node.js 18 ou mais recente
+- npm
+- Backend Web instalado em `C:\Users\danilo58359996\Conrad-`
+- Arquivo `.env` configurado dentro da pasta `Conrad-`
+- Celular e computador na mesma rede Wi-Fi, somente para testar pelo Expo Go
 
-```bash
+O projeto não contém o backend dentro da pasta Mobile. A entrada do backend é:
+
+```text
+C:\Users\danilo58359996\Conrad-\JS\server.js
+```
+
+## Instalação do projeto Mobile
+
+Abra o terminal na pasta do projeto:
+
+```powershell
+cd C:\Users\danilo58359996\Conrad-Mobile
 npm install
-npx expo start        # abra no Expo Go (celular) ou pressione "a" (Android) / "i" (iOS)
-npm run check         # verificação estática: imports, telas registradas e chamadas de API
-npm run check -- ../Conrad--main   # idem + confere cada rota de src/api.js contra o servidor Web
+```
+
+## Como iniciar o servidor local
+
+Abra o primeiro terminal:
+
+```powershell
+cd C:\Users\danilo58359996\Conrad-
+node JS/server.js
+```
+
+O backend deve mostrar mensagens semelhantes a:
+
+```text
+Servidor rodando na porta 3000
+Conectado ao banco de dados PostgreSQL/Supabase.
+```
+
+Teste o servidor em outro terminal:
+
+```powershell
+curl.exe -i http://localhost:3000/health
+curl.exe -i http://localhost:3000/me
+```
+
+A rota `/health` deve retornar:
+
+```json
+{"status":"ok"}
+```
+
+A rota `/me` pode retornar `401` com `{"logado":false}` antes do login. Isso é normal.
+
+## Como iniciar o app Mobile
+
+Abra um segundo terminal:
+
+```powershell
+cd C:\Users\danilo58359996\Conrad-Mobile
+$env:EXPO_PUBLIC_API_URL="http://localhost:3000"
+npx expo start --web --clear
+```
+
+Abra a aplicação web em:
+
+```text
+http://localhost:8081
+```
+
+Se a política do PowerShell bloquear `npx`, use `cmd`:
+
+```powershell
+cd C:\Users\danilo58359996\Conrad-Mobile
+cmd /d /c "set EXPO_PUBLIC_API_URL=http://localhost:3000&& npx expo start --web --clear"
+```
+
+Também é possível autorizar scripts npm e npx para o usuário atual:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+## Testar no celular físico
+
+Descubra o endereço IP da máquina no Windows:
+
+```powershell
+ipconfig
+```
+
+Em um terminal da pasta Mobile, use o IP encontrado:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL="http://SEU_IP:3000"
+npx expo start --clear
+```
+
+Exemplo:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL="http://192.168.0.10:3000"
+```
+
+Abra o projeto com Expo Go no celular. Computador e celular precisam estar na mesma rede Wi-Fi.
+
+## Usar o servidor de produção
+
+Sem `EXPO_PUBLIC_API_URL`, no modo Expo de produção o app utiliza:
+
+```text
+https://conrad.onrender.com
+```
+
+No Render, a primeira requisição pode demorar até cerca de 1 minuto enquanto o servidor acorda.
+
+## Teste manual de cadastro e login
+
+1. Abra `http://localhost:8081`.
+2. Clique em **Criar conta**.
+3. Informe nome, e-mail válido, senha com pelo menos 6 caracteres e tipo de usuário.
+4. Clique em **Criar conta**.
+5. Confirme o redirecionamento para o painel do aluno ou educador.
+6. Execute **Sair** e tente entrar novamente com o mesmo e-mail e senha.
+
+Se aparecer `Erro ao conectar com o servidor`, confirme:
+
+- O backend está rodando na porta `3000`.
+- `EXPO_PUBLIC_API_URL` aponta para `http://localhost:3000`.
+- O navegador foi recarregado sem cache: `Ctrl+Shift+R`.
+- O backend permite a origem `http://localhost:8081` nas configurações CORS.
+- As credenciais do banco estão corretas no `.env` da pasta `Conrad-`.
+
+## Teste rápido pela API
+
+```powershell
+Invoke-RestMethod -Uri "http://localhost:3000/health" -Method Get
+Invoke-RestMethod -Uri "http://localhost:3000/me" -Method Get
+```
+
+O login pode ser testado com JSON válido:
+
+```powershell
+$body = @{ email = "seu-email@teste.com"; senha = "SuaSenha123" } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://localhost:3000/login" -Method Post -ContentType "application/json" -Body $body
 ```
 
 ## Endereço da API
 
 `src/api.js` escolhe o servidor nesta ordem:
 
-1. variável `EXPO_PUBLIC_API_URL` (ex.: `http://10.0.2.2:3000` no emulador Android);
+1. `EXPO_PUBLIC_API_URL`;
 2. campo `extra.apiUrl` do `app.json`;
-3. em desenvolvimento: o IP da máquina que serve o Expo, na porta `3000` (celular físico na mesma rede Wi-Fi);
-4. produção: `https://conrad.onrender.com` (a mesma de `JS/config.js` e `JS/auth.js` do Web).
-
-> Correção: versões antigas deste README citavam `conrad-virtual-school.onrender.com`, que não existe no código.
-
-Para testar localmente, rode o servidor Web (`npm start` na pasta do Web, porta 3000) e abra o app
-no mesmo Wi-Fi. No emulador Android use `EXPO_PUBLIC_API_URL=http://10.0.2.2:3000`.
+3. em desenvolvimento, o IP detectado pelo Expo e a porta `3000`;
+4. em produção, `https://conrad.onrender.com`.
 
 ## Estrutura
 
 ```text
-app/        telas e rotas (Expo Router: um arquivo = uma rota)
-src/        api.js, AuthContext.js, ThemeContext.js, theme.js, format.js, components/, ui/, data/
-assets/     ícone, splash e imagens
-scripts/    check.js (verificação estática)
+app/        Telas e rotas do Expo Router
+src/        API, autenticação, temas, componentes e dados
+assets/     Imagens e ícones
+server      Backend externo em C:\Users\danilo58359996\Conrad-\JS\server.js
 ```
-
-Veja a seção 4 do documento unificado para o detalhamento de cada arquivo.

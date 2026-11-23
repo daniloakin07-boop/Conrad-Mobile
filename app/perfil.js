@@ -72,7 +72,7 @@ export default function Perfil() {
     }
   }
 
-  const iniciais = (nome || usuario.nome).split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+  const iniciais = String(nome || usuario?.nome || "Usuário").trim().split(/\s+/).map((p) => p[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
 
   return (
     <Page loading={loading && !data} error={error} onRefresh={reload}>

@@ -11,3 +11,4 @@ web-build/
 *.mobileprovision
 *.orig.*
 .DS_Store
+!.env.example

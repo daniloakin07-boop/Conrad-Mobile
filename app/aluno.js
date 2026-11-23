@@ -65,7 +65,7 @@ export default function PainelAluno() {
 
   return (
     <Page onRefresh={ativ.reload}>
-      <Title sub="Resumo das suas notas e pendências">{saudacao()}, {usuario.nome.split(" ")[0]}</Title>
+      <Title sub="Resumo das suas notas e pendências">{saudacao()}, {String(usuario?.nome || "Aluno").trim().split(/\s+/)[0]}</Title>
 
       {/* Média geral (cartão em destaque) */}
       <Card style={styles.media}>
