@@ -167,3 +167,16 @@ src/        API, autenticação, temas, componentes e dados
 assets/     Imagens e ícones
 server      Backend externo em C:\Users\danilo58359996\Conrad-\JS\server.js
 ```
+
+## Para distribuir o app para outras pessoas
+
+Por padrão, builds de produção usam `https://conrad.onrender.com`. Assim, qualquer pessoa pode acessar o mesmo backend e o mesmo banco sem configurar o IP do seu computador.
+
+Para desenvolvimento local, use opcionalmente:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL="http://SEU_IP:3000"
+npx expo start --clear
+```
+
+Login e cadastro continuam compartilhando o banco do Render. Cada usuário recebe sua própria sessão pelo cookie `conrad.sid`.

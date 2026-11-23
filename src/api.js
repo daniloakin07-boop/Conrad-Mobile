@@ -31,9 +31,8 @@ function resolverHostDeDesenvolvimento() {
   return host && host.length > 0 ? host : "localhost";
 }
 
-// Endereço de produção conferido em JS/config.js e JS/auth.js (versão Web).
-// ATENÇÃO: o README antigo do Mobile citava "conrad-virtual-school.onrender.com",
-// que NÃO existe no código — o correto é este.
+// Endereço padrão do backend publicado. O app fica funcional em qualquer celular
+// sem depender do IP ou da máquina Windows de quem desenvolveu.
 const PROD_URL = "https://conrad.onrender.com";
 
 export const BASE_URL =
