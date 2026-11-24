@@ -17,6 +17,7 @@ import { useCallback } from "react";
 import { Pressable, Text, View } from "react-native";
 import { api, useApi } from "../src/api";
 import { useAuth } from "../src/AuthContext";
+import AssistenteCard from "../src/components/AssistenteCard";
 import horarios from "../src/data/data-horarios";
 import { dataBR, pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
@@ -66,6 +67,8 @@ export default function PainelAluno() {
   return (
     <Page onRefresh={ativ.reload}>
       <Title sub="Resumo das suas notas e pendências">{saudacao()}, {String(usuario?.nome || "Aluno").trim().split(/\s+/)[0]}</Title>
+
+      <AssistenteCard />
 
       {/* Média geral (cartão em destaque) */}
       <Card style={styles.media}>

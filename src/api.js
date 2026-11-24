@@ -159,6 +159,9 @@ export const api = {
   // --- boletim (JS/medias.js) ---
   boletim: () => request("/api/boletim"),
 
+  // --- assistente de IA (JS/agente.js): o servidor identifica quem é pela sessão ---
+  agente: (pergunta, historico = []) => request("/api/agente", json("POST", { pergunta, historico })),
+
   // --- bate-papo (JS/chat.js; o tempo real usa Socket.IO em src/components/socket.js) ---
   chatContatos: () => request("/api/chat/contatos"),
 };

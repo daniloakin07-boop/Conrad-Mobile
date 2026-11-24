@@ -7,14 +7,14 @@ O app Mobile usa o mesmo backend e o mesmo banco de dados PostgreSQL/Supabase da
 
 - Node.js 18 ou mais recente
 - npm
-- Backend Web instalado em `C:\Users\danilo58359996\Conrad-`
+- Backend Web na pasta irmã `Conrad-` (necessário para testes locais)
 - Arquivo `.env` configurado dentro da pasta `Conrad-`
 - Celular e computador na mesma rede Wi-Fi, somente para testar pelo Expo Go
 
 O projeto não contém o backend dentro da pasta Mobile. A entrada do backend é:
 
 ```text
-C:\Users\danilo58359996\Conrad-\JS\server.js
+..\Conrad-\JS\server.js
 ```
 
 ## Instalação do projeto Mobile
@@ -22,7 +22,7 @@ C:\Users\danilo58359996\Conrad-\JS\server.js
 Abra o terminal na pasta do projeto:
 
 ```powershell
-cd C:\Users\danilo58359996\Conrad-Mobile
+cd "$env:USERPROFILE\Conrad-Mobile"
 npm install
 ```
 
@@ -31,8 +31,8 @@ npm install
 Abra o primeiro terminal:
 
 ```powershell
-cd C:\Users\danilo58359996\Conrad-
-node JS/server.js
+cd "$env:USERPROFILE\Conrad-"
+npm start
 ```
 
 O backend deve mostrar mensagens semelhantes a:
@@ -62,8 +62,8 @@ A rota `/me` pode retornar `401` com `{"logado":false}` antes do login. Isso é 
 Abra um segundo terminal:
 
 ```powershell
-cd C:\Users\danilo58359996\Conrad-Mobile
-$env:EXPO_PUBLIC_API_URL="http://localhost:3000"
+cd "$env:USERPROFILE\Conrad-Mobile"
+$env:EXPO_PUBLIC_API_URL = "http://localhost:3000"
 npx expo start --web --clear
 ```
 
@@ -76,7 +76,7 @@ http://localhost:8081
 Se a política do PowerShell bloquear `npx`, use `cmd`:
 
 ```powershell
-cd C:\Users\danilo58359996\Conrad-Mobile
+cd "$env:USERPROFILE\Conrad-Mobile"
 cmd /d /c "set EXPO_PUBLIC_API_URL=http://localhost:3000&& npx expo start --web --clear"
 ```
 
@@ -109,9 +109,21 @@ $env:EXPO_PUBLIC_API_URL="http://192.168.0.10:3000"
 
 Abra o projeto com Expo Go no celular. Computador e celular precisam estar na mesma rede Wi-Fi.
 
-## Usar o servidor de produção
+## Testar no computador usando o backend de produção
 
-Sem `EXPO_PUBLIC_API_URL`, no modo Expo de produção o app utiliza:
+O app roda no computador, mas as chamadas de API vão para o Render. Pare qualquer Expo antigo com `Ctrl+C`, abra um terminal na pasta Mobile e defina a URL antes de iniciar:
+
+```powershell
+cd "$env:USERPROFILE\Conrad-Mobile"
+$env:EXPO_PUBLIC_API_URL = "https://conrad.onrender.com"
+npx expo start --web --clear
+```
+
+Abra o endereço mostrado pelo Expo, normalmente `http://localhost:8081`. O backend do Render precisa permitir essa origem CORS. A correção precisa estar publicada no serviço antes de atualizar a página. O primeiro acesso ao Render pode demorar até cerca de um minuto.
+
+## Usar o servidor de produção em builds instalados
+
+Sem `EXPO_PUBLIC_API_URL`, um build Expo de produção utiliza:
 
 ```text
 https://conrad.onrender.com
@@ -119,22 +131,50 @@ https://conrad.onrender.com
 
 No Render, a primeira requisição pode demorar até cerca de 1 minuto enquanto o servidor acorda.
 
+## CORS no navegador
+
+O navegador bloqueia chamadas entre `http://localhost:8081` e `https://conrad.onrender.com` se o backend não devolver os cabeçalhos CORS corretos. O servidor deve permitir a origem exata e credenciais de sessão; não use `*` com cookies. A lista fica em `JS/server.js` do repositório `Conrad-`.
+
+Se o Expo escolher outra porta, confira a origem mostrada no console do navegador. A porta precisa estar na lista CORS do backend e a alteração precisa ser implantada no Render. Após o deploy, faça recarga forçada com `Ctrl+Shift+R`.
+
+Teste o preflight no PowerShell:
+
+```powershell
+curl.exe -i -X OPTIONS "https://conrad.onrender.com/login" -H "Origin: http://localhost:8081" -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: content-type"
+```
+
+O resultado esperado contém HTTP `204`, `Access-Control-Allow-Origin: http://localhost:8081` e `Access-Control-Allow-Credentials: true`.
+
 ## Teste manual de cadastro e login
 
-1. Abra `http://localhost:8081`.
-2. Clique em **Criar conta**.
-3. Informe nome, e-mail válido, senha com pelo menos 6 caracteres e tipo de usuário.
-4. Clique em **Criar conta**.
-5. Confirme o redirecionamento para o painel do aluno ou educador.
-6. Execute **Sair** e tente entrar novamente com o mesmo e-mail e senha.
+1. Inicie o backend local ou escolha explicitamente o endereço do Render com `EXPO_PUBLIC_API_URL`.
+2. Abra o endereço indicado pelo Expo, normalmente `http://localhost:8081`.
+3. Clique em **Criar conta**.
+4. Informe nome, e-mail válido, senha com pelo menos 6 caracteres e tipo de usuário.
+5. Clique em **Criar conta**.
+6. Confirme o redirecionamento para o painel do aluno ou educador.
+7. Execute **Sair** e tente entrar novamente com o mesmo e-mail e senha.
 
-Se aparecer `Erro ao conectar com o servidor`, confirme:
+Se aparecer erro, confira a causa correspondente:
 
-- O backend está rodando na porta `3000`.
-- `EXPO_PUBLIC_API_URL` aponta para `http://localhost:3000`.
-- O navegador foi recarregado sem cache: `Ctrl+Shift+R`.
-- O backend permite a origem `http://localhost:8081` nas configurações CORS.
-- As credenciais do banco estão corretas no `.env` da pasta `Conrad-`.
+| Sintoma | O que conferir |
+|---|---|
+| Erro CORS / `No 'Access-Control-Allow-Origin' header` | A origem e porta do navegador estão em `listOrigins` no backend e o commit já foi implantado no Render. |
+| `401` em `/me` antes do login | Normal sem sessão; faça login. |
+| Erro ao conectar com `localhost:3000` | Inicie o backend local na pasta `Conrad-` ou aponte `EXPO_PUBLIC_API_URL` para o Render. |
+| Primeira chamada ao Render demora | Aguarde o serviço acordar (até cerca de um minuto) e tente novamente. |
+| Assistente retorna `503` | Confira `GEMINI_API_KEY` e `GEMINI_MODEL` nas variáveis do backend/Render. |
+
+Não coloque `DB_*`, `GEMINI_API_KEY` ou outras credenciais no Mobile nem em variáveis `EXPO_PUBLIC_*`; elas devem ficar no backend ou no Render.
+
+## Testar o Assistente de IA
+
+1. Entre com uma conta de aluno ou educador.
+2. Abra o cartão **Assistente de IA** no painel ou o item **Assistente de IA** em **Mais**.
+3. Para aluno, experimente “Quantas atividades tenho para entregar?” ou “Quais aulas tenho hoje?”.
+4. Para educador, experimente “Quais são as minhas turmas?”.
+
+Use uma conta que tenha dados relevantes para validar as consultas ao banco. Uma conta nova pode receber uma resposta indicando que ainda não há atividades ou turmas. O assistente exige sessão válida; sem login, `/api/agente` retorna `401`.
 
 ## Teste rápido pela API
 
@@ -165,7 +205,7 @@ Invoke-RestMethod -Uri "http://localhost:3000/login" -Method Post -ContentType "
 app/        Telas e rotas do Expo Router
 src/        API, autenticação, temas, componentes e dados
 assets/     Imagens e ícones
-server      Backend externo em C:\Users\danilo58359996\Conrad-\JS\server.js
+server      Backend externo em ..\Conrad-\JS\server.js
 ```
 
 ## Para distribuir o app para outras pessoas
@@ -175,7 +215,7 @@ Por padrão, builds de produção usam `https://conrad.onrender.com`. Assim, qua
 Para desenvolvimento local, use opcionalmente:
 
 ```powershell
-$env:EXPO_PUBLIC_API_URL="http://SEU_IP:3000"
+$env:EXPO_PUBLIC_API_URL = "http://SEU_IP:3000"
 npx expo start --clear
 ```
 

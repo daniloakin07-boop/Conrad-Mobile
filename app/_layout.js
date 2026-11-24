@@ -33,6 +33,7 @@ const icon = (name) => ({ color, size }) => <Ionicons name={name} size={size} co
 // abertas com router.push, mas sem botão na barra inferior. Sem isto o Expo Router
 // criaria uma aba para cada arquivo de app/. Se criar um arquivo novo em app/, registre-o aqui.
 const OCULTAS = {
+  assistente: "Assistente de IA",
   perfil: "Meu perfil",
   boletim: "Boletim",
   agenda: "Agenda",

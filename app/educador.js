@@ -9,6 +9,7 @@ import { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { api, useApi } from "../src/api";
 import { useAuth } from "../src/AuthContext";
+import AssistenteCard from "../src/components/AssistenteCard";
 import Button from "../src/components/Button";
 import { pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
@@ -41,6 +42,8 @@ export default function PainelEducador() {
   return (
     <Page onRefresh={reload}>
       <Title sub="Visão geral das suas turmas">Olá, {String(usuario?.nome || "Educador").trim().split(/\s+/)[0]}</Title>
+
+      <AssistenteCard />
 
       <View style={styles.stats}>
         <Stat n={turmas.loading ? "–" : listaTurmas.length} label="Turmas" />

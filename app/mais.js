@@ -18,6 +18,7 @@ export default function Mais() {
   const isEducador = usuario.tipo === "educador";
 
   const itens = [
+    ["sparkles-outline", "Assistente de IA", "/assistente"],
     ["person-outline", "Meu perfil", "/perfil"],
     isEducador
       ? ["calendar-outline", "Agenda", "/agenda"]
