@@ -6,7 +6,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 import { api, setUnauthorizedHandler } from "./api";
 
 // Contexto global da sessão. Expõe: usuario ({id,nome,email,tipo} ou null), setUsuario,
-// checking (true enquanto o /me inicial não respondeu), login, cadastrar e logout.
+// checking (true enquanto o /me inicial não respondeu), login, cadastrar, logout e excluirConta.
 const AuthContext = createContext(null);
 
 // Provedor: coloque-o acima das telas (feito em app/_layout.js).
@@ -53,8 +53,18 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Exclui DEFINITIVAMENTE a conta (DELETE /conta). O estado local só é limpo DEPOIS que o
+  // servidor confirma: se a senha estiver errada ou a rede falhar, o erro sobe para a tela e o
+  // usuário continua logado. Em caso de sucesso o servidor já encerrou a sessão e invalidou o
+  // cookie; aqui zeramos o usuário, o que faz o layout raiz (app/_layout.js) voltar ao login.
+  const excluirConta = useCallback(async (senha) => {
+    const resposta = await api.excluirConta(senha);
+    setUsuario(null);
+    return resposta;
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ usuario, setUsuario, checking, login, cadastrar, logout }}>
+    <AuthContext.Provider value={{ usuario, setUsuario, checking, login, cadastrar, logout, excluirConta }}>
       {children}
     </AuthContext.Provider>
   );

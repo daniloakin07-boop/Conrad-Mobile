@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { api, useApi } from "../src/api";
 import { useAuth } from "../src/AuthContext";
+import AcoesAtividade from "../src/components/AcoesAtividade";
 import Button from "../src/components/Button";
 import { dataBR, ehEducador, pts } from "../src/format";
 import { COLORS, FONTS } from "../src/theme";
@@ -14,7 +15,8 @@ import { makeStyles } from "../src/ui/estilos";
 // Equivale a pages/atividades.html, avaliacoes.html, aluno-atividades.html e
 // professor-correcao.html do Web. Mesmos filtros: tipo (atividade | avaliação) e turma.
 //  • educador: lista o que ele publicou (GET /api/atividades), com a contagem de
-//    entregas/corrigidas, e abre a correção em /atividade/[id]/entregas;
+//    entregas/corrigidas, abre a correção em /atividade/[id]/entregas e oferece
+//    "Editar" (/atividade/[id]/editar) e "Excluir atividade" (DELETE /api/atividades/:id);
 //  • aluno: lista o que as suas turmas publicaram (GET /api/aluno/atividades), com a
 //    situação (Pendente, Enviada ou Nota), e abre /atividade/[id].
 // ============================================================================
@@ -78,7 +80,7 @@ export default function Atividades() {
           }
         />
       ) : (
-        itens.map((a) => (educador ? <ItemEducador key={a.id} a={a} router={router} /> : <ItemAluno key={a.id} a={a} router={router} />))
+        itens.map((a) => (educador ? <ItemEducador key={a.id} a={a} router={router} onMudou={lista.reload} /> : <ItemAluno key={a.id} a={a} router={router} />))
       )}
     </Page>
   );
@@ -94,14 +96,17 @@ function Meta({ a }) {
   );
 }
 
-// Cartão do educador: progresso de correção da atividade.
-function ItemEducador({ a, router }) {
+// Cartão do educador: progresso de correção da atividade + ações de editar/excluir.
+// O toque na área de informações abre as entregas; os botões de ação ficam FORA desse Pressable
+// (irmãos, não filhos) para não haver botão dentro de botão. `onMudou` recarrega a lista
+// depois que o servidor confirma a exclusão.
+function ItemEducador({ a, router, onMudou }) {
   const s = useS();
   const total = Number(a.total_entregas || 0);
   const corrigidas = Number(a.corrigidas || 0);
   return (
-    <Pressable onPress={() => router.push(`/atividade/${a.id}/entregas`)}>
-      <Card>
+    <Card>
+      <Pressable onPress={() => router.push(`/atividade/${a.id}/entregas`)}>
         <Text style={s.titulo}>{a.titulo}</Text>
         <Meta a={a} />
         <View style={s.rodape}>
@@ -112,8 +117,9 @@ function ItemEducador({ a, router }) {
           />
           <Text style={s.link}>{total ? "Ver entregas ›" : ""}</Text>
         </View>
-      </Card>
-    </Pressable>
+      </Pressable>
+      <AcoesAtividade atividade={a} onExcluida={onMudou} />
+    </Card>
   );
 }
 

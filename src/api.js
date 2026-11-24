@@ -31,8 +31,9 @@ function resolverHostDeDesenvolvimento() {
   return host && host.length > 0 ? host : "localhost";
 }
 
-// Endereço padrão do backend publicado. O app fica funcional em qualquer celular
-// sem depender do IP ou da máquina Windows de quem desenvolveu.
+// Endereço de produção conferido em JS/config.js e JS/auth.js (versão Web).
+// ATENÇÃO: o README antigo do Mobile citava "conrad-virtual-school.onrender.com",
+// que NÃO existe no código — o correto é este.
 const PROD_URL = "https://conrad.onrender.com";
 
 export const BASE_URL =
@@ -125,6 +126,10 @@ export const api = {
   contato: (payload) => request("/contato", json("POST", payload)),
   perfil: () => request("/perfil"),
   salvarPerfil: (payload) => request("/perfil", json("PUT", payload)),
+  // Exclusão DEFINITIVA da própria conta (DELETE /conta, JS/exclusao-conta.js no servidor).
+  // Envia só a senha: o servidor usa o ID da sessão (cookie) e nunca um ID vindo do app.
+  // Senha incorreta volta como 403 (não 401), por isso não derruba a sessão local por engano.
+  excluirConta: (senha) => request("/conta", json("DELETE", { senha })),
 
   // --- turmas (JS/turmas.js) ---
   turmas: () => request("/api/turmas"),
@@ -140,6 +145,11 @@ export const api = {
   // Envia { titulo, turma_id, data_aplicacao, valor_maximo, descricao, tipo }.
   // O servidor ignora qualquer outro campo (não há "questões" nesta versão do back-end).
   criarAtividade: (payload) => request("/api/atividades", json("POST", payload)),
+  // Educador autor: atualiza a atividade (PUT /api/atividades/:id). Aceita os mesmos campos da
+  // criação; o servidor devolve { mensagem, atividade } e recusa (409) edições que prejudiquem notas.
+  editarAtividade: (id, payload) => request(`/api/atividades/${id}`, json("PUT", payload)),
+  // Educador autor: exclui a atividade e as entregas/notas ligadas a ela (DELETE /api/atividades/:id).
+  excluirAtividade: (id) => request(`/api/atividades/${id}`, { method: "DELETE" }),
   entregas: (id) => request(`/api/atividades/${id}/entregas`),
   corrigir: (entregaId, corpo) => request(`/api/entregas/${entregaId}/correcao`, json("PUT", corpo)),
   // Aluno: atividades das turmas em que está matriculado, já com entrega, nota e feedback.

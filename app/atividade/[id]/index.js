@@ -10,8 +10,8 @@
 // O servidor não tem rota de detalhe por atividade; por isso a tela busca a lista do aluno
 // (GET /api/aluno/atividades) e escolhe a atividade pelo id da rota.
 // ============================================================================
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { Stack, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { api } from "../../../src/api";
 import Button from "../../../src/components/Button";
@@ -52,6 +52,19 @@ function AtividadeAluno() {
   }, [id]);
 
   useEffect(() => { carregar(); }, [carregar]);
+
+  // As abas mantêm a tela montada: ao voltar a ela, recarrega para não mostrar dados antigos
+  // (o educador pode ter editado ou EXCLUÍDO a atividade; se foi excluída, aparece "não encontrada").
+  const primeiraVez = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (primeiraVez.current) {
+        primeiraVez.current = false;
+        return;
+      }
+      carregar();
+    }, [carregar])
+  );
 
   return (
     <>

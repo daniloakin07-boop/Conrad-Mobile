@@ -5,11 +5,14 @@
 // (grava { nota, feedback }; o servidor confere se a atividade é do professor,
 // exige 0 ≤ nota ≤ valor_maximo e grava nota + feedback em uma transação).
 // Corrigir de novo apenas atualiza a nota e o feedback.
+// No topo da tela ficam também "Editar" e "Excluir atividade" (AcoesAtividade): ao excluir, o
+// servidor remove a atividade e as entregas/notas dela e a tela volta para a lista.
 // ============================================================================
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useRef, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { api, useApi } from "../../../src/api";
+import AcoesAtividade from "../../../src/components/AcoesAtividade";
 import Button from "../../../src/components/Button";
 import Message from "../../../src/components/Message";
 import { dataHoraBR, num, pts } from "../../../src/format";
@@ -28,7 +31,21 @@ export default function EntregasTela() {
 
 function Entregas() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const { data, loading, error, reload } = useApi(() => api.entregas(id), [id]);
+
+  // Ao voltar da tela de edição, recarrega para mostrar o valor máximo atualizado (a primeira
+  // abertura já é carregada pelo useApi; por isso a primeira execução é ignorada).
+  const primeiraVez = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      if (primeiraVez.current) {
+        primeiraVez.current = false;
+        return;
+      }
+      reload();
+    }, [reload])
+  );
   const entregas = data?.entregas || [];
 
   return (
@@ -36,6 +53,12 @@ function Entregas() {
       <Stack.Screen options={{ title: "Entregas" }} />
       <Page loading={loading} error={error} onRefresh={reload}>
         <Title sub={`Valor máximo: ${pts(data?.valor_maximo ?? 0)}`}>Correção</Title>
+        <AcoesAtividade
+          atividade={{ id, total_entregas: entregas.length }}
+          // Atividade excluída: não há mais o que corrigir, volta para a lista (que recarrega ao focar)
+          onExcluida={() => router.back()}
+        />
+        <View style={{ height: 12 }} />
         {entregas.length === 0 ? (
           <Empty text="Nenhum aluno enviou resposta ainda." />
         ) : (

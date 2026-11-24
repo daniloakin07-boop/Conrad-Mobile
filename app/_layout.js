@@ -42,7 +42,18 @@ const OCULTAS = {
   "atividade/nova": "Nova atividade",
   "atividade/[id]/index": "Atividade",
   "atividade/[id]/entregas": "Entregas",
+  "atividade/[id]/editar": "Editar atividade",
   "turma/[id]": "Turma",
+  // Arquivos antigos de app/ que não são usados pela navegação atual. Sem registro aqui, o Expo
+  // Router criava um botão extra na barra inferior para cada um (e alguns redirecionam ao abrir).
+  // Ficam ocultos; o ideal é removê-los do repositório quando não forem mais necessários.
+  "aluno-atividades": "Atividades",
+  "agenda-professor": "Agenda",
+  "bate-papo": "Bate-papo",
+  dashboard: "Dashboard",
+  horarios: "Horários",
+  "atividade-nova": "Nova atividade",
+  "atividade-entregas": "Entregas",
 };
 const PUBLICAS_OCULTAS = ["index", "login", "cadastro", "contato", "sobre"];
 const ABAS = new Set(["aluno", "educador", "turmas", "atividades", "chat", "mais"]);
@@ -87,23 +98,35 @@ function TabsNavigator() {
   return (
     <Tabs
       backBehavior="history"
-      screenOptions={{
-        header: ({ route, options, navigation }) => (
-          <SiteHeader
-            modo="app"
-            titulo={options.title ?? OCULTAS[route.name] ?? route.name}
-            voltar={
-              ABAS.has(route.name)
-                ? undefined
-                : () => (navigation.canGoBack() ? navigation.goBack() : router.replace(painel))
-            }
-          />
-        ),
-        tabBarActiveTintColor: COLORS.orange,
-        tabBarInactiveTintColor: COLORS.tabInactive,
-        tabBarLabelStyle: { fontFamily: FONTS.bodyBold, fontSize: 11 },
-        tabBarStyle: { backgroundColor: COLORS.tabBar, borderTopColor: COLORS.border },
-        sceneStyle: { backgroundColor: COLORS.background },
+      // screenOptions como FUNÇÃO: as opções dependem da rota atual.
+      //  • ABAS = páginas principais → barra inferior visível;
+      //  • qualquer outra rota (perfil, boletim, detalhes, edição...) → barra totalmente oculta
+      //    (display: "none") e sem botão próprio, mesmo que o arquivo não esteja em OCULTAS.
+      // Todas continuam dentro do mesmo <Tabs>, então o estado das abas é preservado.
+      screenOptions={({ route }) => {
+        const principal = ABAS.has(route.name);
+        return {
+          header: ({ route: rota, options, navigation }) => (
+            <SiteHeader
+              modo="app"
+              titulo={options.title ?? OCULTAS[rota.name] ?? rota.name}
+              // Páginas secundárias: volta para a tela anterior; sem histórico, vai ao painel do perfil
+              voltar={
+                ABAS.has(rota.name)
+                  ? undefined
+                  : () => (navigation.canGoBack() ? navigation.goBack() : router.replace(painel))
+              }
+            />
+          ),
+          tabBarActiveTintColor: COLORS.orange,
+          tabBarInactiveTintColor: COLORS.tabInactive,
+          tabBarLabelStyle: { fontFamily: FONTS.bodyBold, fontSize: 11 },
+          tabBarStyle: principal
+            ? { backgroundColor: COLORS.tabBar, borderTopColor: COLORS.border }
+            : { display: "none" },
+          tabBarButton: principal ? undefined : () => null,
+          sceneStyle: { backgroundColor: COLORS.background },
+        };
       }}
     >
       <Tabs.Screen name="aluno" options={{ title: "Painel", tabBarIcon: icon("home-outline"), href: educador ? null : undefined }} />

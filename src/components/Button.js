@@ -1,6 +1,6 @@
 // ============================================================================
 // src/components/Button.js — botão padrão do app
-// Props: label (texto), onPress, variant ("solid" | "cta" | "outline"), loading (mostra
+// Props: label (texto), onPress, variant ("solid" | "cta" | "outline" | "danger"), loading (mostra
 // spinner e bloqueia toques), disabled e style (ajustes pontuais do chamador).
 // Usado em praticamente todas as telas (login, cadastro, turmas, atividades...).
 // ============================================================================
@@ -11,7 +11,8 @@ import { makeStyles } from "../ui/estilos";
 // Variantes de botão, espelhando os botões do CSS do Web:
 // - solid:   .btn-primario dos formulários (bloco azul-marinho, largura total);
 // - cta:     .btn-primario do topo/hero (pílula laranja);
-// - outline: .btn-link do hero (pílula branca com texto azul).
+// - outline: .btn-link do hero (pílula branca com texto azul);
+// - danger:  .btn-perigo (ação destrutiva, como "Excluir").
 // As cores vêm de COLORS e acompanham o tema ativo (normal/claro/escuro).
 const variantes = () => ({
   solid: {
@@ -27,6 +28,14 @@ const variantes = () => ({
     color: COLORS.white,
     radius: RADIUS.pill,
     block: false,
+  },
+  // danger: ação destrutiva (excluir) — equivale ao .btn-perigo do Web; usa a cor de erro do tema
+  danger: {
+    bg: COLORS.error,
+    bgPressed: COLORS.error,
+    color: COLORS.white,
+    radius: RADIUS.md,
+    block: true,
   },
   // .hero-simples .btn-link do Web: pílula branca com texto azul
   outline: {
